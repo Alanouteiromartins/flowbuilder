@@ -1,0 +1,39 @@
+<div class="dashboard-container">
+  <div class="success-card">
+    <div class="success-icon-wrapper">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="success-icon">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+      </svg>
+    </div>
+
+    <h1 class="success-title">Login feito com sucesso!</h1>
+    <p class="success-subtitle">Sua autenticação com o Firebase foi concluída perfeitamente.</p>
+
+    @if (user) {
+      <div class="user-profile">
+        @if (user.photoURL) {
+          <img [src]="user.photoURL" alt="Profile" class="user-avatar" />
+        } @else {
+          <div class="user-avatar-placeholder">
+            {{ user.email ? user.email.substring(0, 2).toUpperCase() : 'U' }}
+          </div>
+        }
+        
+        <div class="user-details">
+          <span class="user-name">{{ user.displayName || 'Usuário AM chat' }}</span>
+          <span class="user-email">{{ user.email }}</span>
+          <span class="auth-provider">
+            Método: {{ user.providerData[0]?.providerId === 'google.com' ? 'Google' : 'E-mail e Senha' }}
+          </span>
+        </div>
+      </div>
+    }
+
+    <button (click)="onLogout()" class="logout-button">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="logout-icon">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+      </svg>
+      <span>Sair da conta</span>
+    </button>
+  </div>
+</div>

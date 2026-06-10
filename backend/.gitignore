@@ -1,0 +1,15 @@
+# Node dependencies
+node_modules/
+
+# Local environment variables
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+
+# Firebase credentials file (containing sensitive private keys!)
+serviceAccountKey.json
+*.json.key
+key.json
+credentials.json

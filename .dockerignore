@@ -1,0 +1,10 @@
+node_modules
+.angular
+dist
+.git
+.vscode
+backend/node_modules
+backend/serviceAccountKey.json
+.env
+*.zip
+*.rar

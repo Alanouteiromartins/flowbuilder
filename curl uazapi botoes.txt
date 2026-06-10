@@ -1,0 +1,40 @@
+listas
+
+curl -X POST "https://amtecnologia.uazapi.com/send/menu" \
+  -H "Accept: application/json" \
+  -H "token: fda9c175-4f02-476c-8512-f4da3a7a8189" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "number": "NUMERO_DO_CLIENTE_AQUI",
+    "type": "list",
+    "text": "Que bom ter você aqui! 👋\n\nComo podemos te ajudar hoje?",
+    "footerText": "📍 São Leopoldo/RS · Seg–Sex, 09h às 18h",
+    "listButton": "Selecionar serviço",
+    "selectableCount": 1,
+    "choices": [
+      "Acompanhar meu processo|info_processo",
+      "Consulta sobre novo caso|abrir_processo",
+      "Enviar documentos|enviar_documentos"
+    ],
+    "delay": 1200
+  }'
+
+botões
+
+curl -X POST "https://amtecnologia.uazapi.com/send/menu" \
+  -H "Accept: application/json" \
+  -H "token: fda9c175-4f02-476c-8512-f4da3a7a8189" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "number": "NUMERO_DO_CLIENTE_AQUI",
+    "type": "button",
+    "text": "Remor Advogados Associados ⚖️\n\nOlá! Seja bem-vindo(a) ao nosso canal de atendimento.\n\n🕒 *Horários de Atendimento:*\n• Geral: Segunda a Sexta das 09h às 18h.\n• Condominial: A partir das 12h.\n\nComo podemos te ajudar hoje?",
+    "selectableCount": 1,
+    "choices": [
+      "Já sou cliente|cliente_existente",
+      "Ainda não sou cliente|novo_cliente",
+      "Assuntos condominiais|area_condominial"
+    ],
+    "delay": 1800,
+    "footerText": "📍 São Leopoldo/RS"
+  }'

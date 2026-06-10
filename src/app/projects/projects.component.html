@@ -1,0 +1,264 @@
+<div class="app-layout">
+  <!-- Top Header Navigation (Horizontal) -->
+  <header class="top-header">
+    <div class="header-brand">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="brand-icon">
+        <rect width="8" height="8" x="3" y="3" rx="2"/>
+        <rect width="8" height="8" x="13" y="13" rx="2"/>
+        <path d="M14 6h3a2 2 0 0 1 2 2v3"/>
+        <path d="M7 11v3a2 2 0 0 0 2 2h3"/>
+      </svg>
+      <span class="brand-name">AM chat builder</span>
+    </div>
+
+    <!-- Central Search Input -->
+    <div class="search-container">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="search-icon">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.602 10.602z" />
+      </svg>
+      <input
+        type="text"
+        placeholder="Buscar projetos... (Pressione '/')"
+        class="search-input"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+      />
+      <div class="search-shortcut">/</div>
+    </div>
+
+    <!-- Right-side User Control -->
+    <div class="user-control">
+      <span class="user-email" *ngIf="user">{{ user.email }}</span>
+      <button (click)="onLogout()" class="btn-logout" title="Sair da conta">
+        Sair
+      </button>
+    </div>
+  </header>
+
+  <!-- Firebase Connection Error Banner -->
+  <div class="error-banner" *ngIf="projectService.databaseError()">
+    <span class="error-dot"></span>
+    <span>{{ projectService.databaseError() }}</span>
+  </div>
+
+  <!-- Main Content Grid -->
+  <main class="main-content">
+    <div class="page-title-row">
+      <h1 class="page-title">Meus Projetos</h1>
+      <button (click)="openCreateModal()" class="btn-primary" [disabled]="projectService.isLoading()">
+        + Novo Projeto
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="projectService.isLoading()">
+      <span class="spinner-blue"></span>
+      <p>Conectando ao Firebase Firestore...</p>
+    </div>
+
+    <!-- Grid of Projects -->
+    <div class="projects-grid" *ngIf="!projectService.isLoading()">
+      <!-- Create Project Card (Interactive Trigger) -->
+      <div class="project-card create-trigger-card" (click)="openCreateModal()">
+        <div class="create-trigger-content">
+          <div class="create-plus-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="create-plus-icon">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+          </div>
+          <span class="create-text">Criar novo projeto</span>
+        </div>
+      </div>
+
+      <!-- Real project list -->
+      <div class="project-card" *ngFor="let project of filteredProjects()">
+        <div class="card-header">
+          <span class="status-badge" [class.active]="project.status === 'Ativo'">
+            <span class="status-dot"></span>
+            {{ project.status }}
+          </span>
+          <span class="date-text">{{ project.createdAt | date:'dd/MM/yyyy' }}</span>
+        </div>
+
+        <h3 class="card-title" (click)="openProject(project)">{{ project.name }}</h3>
+        <p class="card-description">{{ project.description || 'Sem descrição cadastrada.' }}</p>
+
+        <div class="card-meta">
+          <span class="meta-item">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="meta-icon">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M18 8A3 3 0 1 0 18 2A3 3 0 0 0 18 8ZM6 22A3 3 0 1 0 6 16A3 3 0 0 0 6 22ZM18 8V12a4 4 0 0 1-4 4H6" />
+            </svg>
+            {{ project.flowCount }} {{ project.flowCount === 1 ? 'fluxo' : 'fluxos' }}
+          </span>
+        </div>
+
+        <div class="card-actions">
+          <button (click)="openProject(project)" class="btn-open-project">
+            <span>Abrir fluxo</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="arrow-icon">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </button>
+          <div class="card-options">
+            <button (click)="openEditModal(project)" class="btn-icon-action" title="Editar">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+              </svg>
+            </button>
+            <button (click)="onDeleteProject(project)" class="btn-icon-action btn-icon-delete" title="Excluir">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!projectService.isLoading() && filteredProjects().length === 0">
+      <div class="empty-state-content">
+        <div class="empty-state-icon-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="empty-state-icon">
+            <rect width="8" height="8" x="3" y="3" rx="2"/>
+            <rect width="8" height="8" x="13" y="13" rx="2"/>
+            <path d="M14 6h3a2 2 0 0 1 2 2v3"/>
+            <path d="M7 11v3a2 2 0 0 0 2 2h3"/>
+          </svg>
+        </div>
+        <h3 class="empty-state-title">Nenhum projeto encontrado</h3>
+        <p class="empty-state-description" *ngIf="searchQuery()">
+          Não encontramos nenhum projeto correspondente a "{{ searchQuery() }}". Tente buscar com outros termos.
+        </p>
+        <p class="empty-state-description" *ngIf="!searchQuery()">
+          Crie seu primeiro projeto para começar a construir fluxos de conversa automatizados.
+        </p>
+        <button *ngIf="!searchQuery()" (click)="openCreateModal()" class="btn-primary empty-state-btn">
+          + Criar Primeiro Projeto
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Create New Project Modal -->
+  <div class="modal-overlay" *ngIf="isCreateModalOpen()">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Novo Projeto</h2>
+        <button (click)="closeCreateModal()" class="btn-close-modal">×</button>
+      </div>
+
+      <form (ngSubmit)="onCreateSubmit()" class="modal-form">
+        <div class="form-group">
+          <label for="new-name">Nome do Projeto *</label>
+          <input
+            type="text"
+            id="new-name"
+            class="form-control"
+            placeholder="Ex: SAC WhatsApp"
+            required
+            [ngModel]="formName()"
+            (ngModelChange)="formName.set($event)"
+            name="newName"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="new-desc">Descrição</label>
+          <textarea
+            id="new-desc"
+            class="form-control"
+            rows="3"
+            placeholder="Descreva o propósito deste projeto..."
+            [ngModel]="formDescription()"
+            (ngModelChange)="formDescription.set($event)"
+            name="newDesc"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="new-status">Status</label>
+          <select
+            id="new-status"
+            class="form-control"
+            [ngModel]="formStatus()"
+            (ngModelChange)="formStatus.set($event)"
+            name="newStatus"
+          >
+            <option value="Ativo">Ativo</option>
+            <option value="Rascunho">Rascunho</option>
+          </select>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" (click)="closeCreateModal()" class="btn-secondary">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-primary" [disabled]="!formName().trim()">
+            Criar Projeto
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Project Modal -->
+  <div class="modal-overlay" *ngIf="isEditModalOpen()">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Editar Projeto</h2>
+        <button (click)="closeEditModal()" class="btn-close-modal">×</button>
+      </div>
+
+      <form (ngSubmit)="onEditSubmit()" class="modal-form">
+        <div class="form-group">
+          <label for="edit-name">Nome do Projeto *</label>
+          <input
+            type="text"
+            id="edit-name"
+            class="form-control"
+            required
+            [ngModel]="formName()"
+            (ngModelChange)="formName.set($event)"
+            name="editName"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="edit-desc">Descrição</label>
+          <textarea
+            id="edit-desc"
+            class="form-control"
+            rows="3"
+            [ngModel]="formDescription()"
+            (ngModelChange)="formDescription.set($event)"
+            name="editDesc"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-status">Status</label>
+          <select
+            id="edit-status"
+            class="form-control"
+            [ngModel]="formStatus()"
+            (ngModelChange)="formStatus.set($event)"
+            name="editStatus"
+          >
+            <option value="Ativo">Ativo</option>
+            <option value="Rascunho">Rascunho</option>
+          </select>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" (click)="closeEditModal()" class="btn-secondary">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-primary" [disabled]="!formName().trim()">
+            Salvar Alterações
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

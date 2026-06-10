@@ -1,0 +1,674 @@
+<div class="workspace-layout">
+  <!-- Horizontal Top Navbar -->
+  <header class="workspace-header">
+    <div class="header-left">
+      <a routerLink="/projects" class="btn-back">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="back-icon">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>
+        <span>Projetos</span>
+      </a>
+      <span class="header-divider">/</span>
+      <h1 class="project-name-title" *ngIf="project()">{{ project()?.name }}</h1>
+    </div>
+    <div class="header-right">
+      <span class="workspace-tag">Área de Trabalho</span>
+    </div>
+  </header>
+
+  <!-- Split Container: Sidebar + Content -->
+  <div class="workspace-body">
+    <!-- Left Navigation Sidebar -->
+    <aside class="workspace-sidebar">
+      <nav class="sidebar-nav">
+        <button
+          class="nav-item"
+          [class.active]="activeTab() === 'flows'"
+          (click)="selectTab('flows')"
+        >
+          <span class="nav-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="16" y="16" width="6" height="6" rx="1"/>
+              <rect x="2" y="16" width="6" height="6" rx="1"/>
+              <rect x="9" y="2" width="6" height="6" rx="1"/>
+              <path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/>
+              <path d="M12 12V8"/>
+            </svg>
+          </span>
+          <span>Fluxos</span>
+        </button>
+
+        <button
+          class="nav-item"
+          [class.active]="activeTab() === 'integrations'"
+          (click)="selectTab('integrations')"
+        >
+          <span class="nav-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22v-5"/>
+              <path d="M9 8V2h6v6"/>
+              <path d="M18 8v4a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8z"/>
+            </svg>
+          </span>
+          <span>Integrações</span>
+        </button>
+
+        <button
+          class="nav-item"
+          [class.active]="activeTab() === 'variables'"
+          (click)="selectTab('variables')"
+        >
+          <span class="nav-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 1.5 1.5M15.5 7.5 14 6"/>
+            </svg>
+          </span>
+          <span>Variáveis</span>
+        </button>
+
+        <button
+          class="nav-item"
+          [class.active]="activeTab() === 'settings'"
+          (click)="selectTab('settings')"
+        >
+          <span class="nav-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+          </span>
+          <span>Configurações</span>
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Right Dynamic Content Panel -->
+    <main class="workspace-content">
+
+      <!-- ==================== TAB: FLOWS (FLUXOS) ==================== -->
+      <section *ngIf="activeTab() === 'flows'" class="tab-panel">
+        <div class="panel-header-row">
+          <div>
+            <h2 class="panel-title">Gerenciador de Fluxos</h2>
+            <p class="panel-subtitle">Crie e edite os caminhos de conversa automatizados do seu chatbot.</p>
+          </div>
+          <button (click)="openNewFlowModal()" class="btn-primary-flat">
+            + Novo Fluxo
+          </button>
+        </div>
+
+        <div class="flows-list">
+          <!-- Loading skeleton -->
+          <div class="loading-skeleton" *ngIf="isLoadingFlows()">
+            <div class="skeleton-row" *ngFor="let i of [1,2,3]"></div>
+          </div>
+
+          <!-- Rich Empty State (only shown after loading completes) -->
+          <div class="empty-state-list" *ngIf="!isLoadingFlows() && flows().length === 0">
+            <div class="empty-state-content">
+              <div class="empty-state-icon-wrapper">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="empty-state-icon">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                </svg>
+              </div>
+              <h3 class="empty-state-title">Nenhum fluxo cadastrado</h3>
+              <p class="empty-state-description">
+                Crie seu primeiro fluxo de conversação para começar a desenhar mensagens, botões e regras lógicas.
+              </p>
+              <button (click)="openNewFlowModal()" class="btn-primary-flat empty-state-btn">
+                + Criar Primeiro Fluxo
+              </button>
+            </div>
+          </div>
+
+          <!-- Flow Rows -->
+          <ng-container *ngIf="!isLoadingFlows()">
+            <div class="flow-row" *ngFor="let flow of flows()">
+              <div class="flow-info">
+                <div class="flow-title-line">
+                  <span class="status-indicator-dot" [class.active]="flow.isActive">
+                    <span class="status-dot"></span>
+                  </span>
+                  <h3 class="flow-name" (click)="openFlowBuilder(flow)">{{ flow.name }}</h3>
+                </div>
+                <p class="flow-description">{{ flow.description || 'Sem descrição cadastrada.' }}</p>
+                <span class="flow-meta">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="meta-inline-icon">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Atualizado em {{ flow.updatedAt | date:'dd/MM/yyyy HH:mm' }}
+                </span>
+              </div>
+
+              <div class="flow-actions">
+                <button (click)="openFlowBuilder(flow)" class="btn-open-builder">
+                  <span>Desenhar</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="arrow-icon">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>
+                </button>
+                <div class="flow-options">
+                  <button (click)="openEditFlowModal(flow)" class="btn-icon-action" title="Editar">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                    </svg>
+                  </button>
+                  <button (click)="onDeleteFlow(flow)" class="btn-icon-action btn-icon-delete" title="Excluir">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </section>
+
+      <!-- ==================== TAB: INTEGRATIONS (INTEGRAÇÕES) ==================== -->
+      <section *ngIf="activeTab() === 'integrations'" class="tab-panel">
+        <div class="panel-header-row">
+          <div>
+            <h2 class="panel-title">Canais de Integração</h2>
+            <p class="panel-subtitle">Conecte o seu projeto com canais de mensagem externos.</p>
+          </div>
+        </div>
+
+        <div class="integrations-grid">
+          <div class="integration-item-card" *ngFor="let item of integrations()">
+            <div class="integration-main">
+              <div class="integration-icon-badge">
+                <ng-container [ngSwitch]="item.key">
+                  <img *ngSwitchCase="'chatwoot'" src="logo_chatwoot.svg" alt="Chatwoot Logo" class="integration-logo-img" />
+                  <img *ngSwitchCase="'uazapi'" src="uazapi-logo.png" alt="Uazapi Logo" class="integration-logo-img" />
+                  <span *ngSwitchDefault>{{ item.icon }}</span>
+                </ng-container>
+              </div>
+              <div class="integration-details">
+                <h3 class="integration-name">{{ item.name }}</h3>
+                <p class="integration-desc">{{ item.description }}</p>
+              </div>
+            </div>
+            <div class="integration-action">
+              <div class="status-and-config">
+                <span class="connection-status-tag" [class.connected]="item.isConnected">
+                  <span class="status-dot"></span>
+                  {{ item.isConnected ? 'Conectado' : 'Desconectado' }}
+                </span>
+                <button 
+                  *ngIf="item.isConnected && (item.key === 'chatwoot' || item.key === 'uazapi')"
+                  (click)="item.key === 'chatwoot' ? openChatwootConfig() : openUazapiConfig()"
+                  class="btn-icon-action"
+                  title="Configurar credenciais"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.43l-1.003.828c-.293.241-.438.613-.43.992a7.723 7.723 0 010 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.43l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.991l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128c.332-.183.582-.495.645-.869l.214-1.28z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </button>
+              </div>
+              <button 
+                (click)="toggleIntegration(item)" 
+                class="btn-toggle-connection"
+                [class.btn-disconnect]="item.isConnected"
+              >
+                {{ item.isConnected ? 'Desconectar' : 'Conectar' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB: VARIABLES (VARIÁVEIS) ==================== -->
+      <section *ngIf="activeTab() === 'variables'" class="tab-panel">
+        <div class="panel-header-row">
+          <div>
+            <h2 class="panel-title">Variáveis Globais</h2>
+            <p class="panel-subtitle">Armazene informações dos contatos (como nome, telefone, preferências) para personalizar os fluxos.</p>
+          </div>
+          <button (click)="openNewVarModal()" class="btn-primary-flat">
+            + Nova Variável
+          </button>
+        </div>
+
+        <div class="variables-container">
+          <!-- Rich Empty State -->
+          <div class="empty-state-list" *ngIf="variables().length === 0">
+            <div class="empty-state-content">
+              <div class="empty-state-icon-wrapper">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="empty-state-icon">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+                </svg>
+              </div>
+              <h3 class="empty-state-title">Nenhuma variável criada</h3>
+              <p class="empty-state-description">
+                Armazene dados dos contatos (como nome, email ou preferências) para personalizar o conteúdo dos seus fluxos de conversa.
+              </p>
+              <button (click)="openNewVarModal()" class="btn-primary-flat empty-state-btn">
+                + Criar Primeira Variável
+              </button>
+            </div>
+          </div>
+
+          <!-- Refined Flat Table -->
+          <div class="table-card-wrapper" *ngIf="variables().length > 0">
+            <table class="flat-table">
+              <thead>
+                <tr>
+                  <th>Nome Técnico</th>
+                  <th>Tipo de Dado</th>
+                  <th>Valor Padrão</th>
+                  <th class="text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let v of variables()">
+                  <td class="tech-name-cell">
+                    <code>{{ '{' }}{{ v.name }}{{ '}' }}</code>
+                  </td>
+                  <td>
+                    <span class="type-tag" [attr.data-type]="v.type">{{ v.type }}</span>
+                  </td>
+                  <td class="default-val-cell">{{ v.defaultValue || '(vazio)' }}</td>
+                  <td class="text-right">
+                    <div class="row-options-toolbar">
+                      <button (click)="openEditVarModal(v)" class="btn-icon-action" title="Editar">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                        </svg>
+                      </button>
+                      <button (click)="onDeleteVar(v)" class="btn-icon-action btn-icon-delete" title="Excluir">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB: SETTINGS (CONFIGURAÇÕES) ==================== -->
+      <section *ngIf="activeTab() === 'settings'" class="tab-panel">
+        <div class="panel-header-row">
+          <div>
+            <h2 class="panel-title">Configurações do Projeto</h2>
+            <p class="panel-subtitle">Gerencie o nome, descrição e status deste projeto.</p>
+          </div>
+        </div>
+
+        <div class="settings-form-container">
+          <form (ngSubmit)="onProjectSettingsSubmit()" class="flat-settings-form">
+            <div class="form-group">
+              <label for="settings-name">Nome do Projeto *</label>
+              <input
+                type="text"
+                id="settings-name"
+                class="form-control-flat"
+                required
+                [ngModel]="settingsName()"
+                (ngModelChange)="settingsName.set($event)"
+                name="settingsName"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="settings-desc">Descrição</label>
+              <textarea
+                id="settings-desc"
+                class="form-control-flat"
+                rows="4"
+                [ngModel]="settingsDescription()"
+                (ngModelChange)="settingsDescription.set($event)"
+                name="settingsDesc"
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="settings-status">Status</label>
+              <select
+                id="settings-status"
+                class="form-control-flat"
+                [ngModel]="settingsStatus()"
+                (ngModelChange)="settingsStatus.set($event)"
+                name="settingsStatus"
+              >
+                <option value="Ativo">Ativo</option>
+                <option value="Rascunho">Rascunho</option>
+              </select>
+            </div>
+
+            <div class="form-actions-settings">
+              <button type="submit" class="btn-primary-flat" [disabled]="!settingsName().trim()">
+                Salvar Alterações
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ==================== MODALS ==================== -->
+
+<!-- Flow Form Modal -->
+<div class="modal-overlay" *ngIf="isFlowModalOpen()">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>{{ flowFormId() ? 'Editar Fluxo' : 'Novo Fluxo' }}</h2>
+      <button (click)="closeFlowModal()" class="btn-close-modal">×</button>
+    </div>
+
+    <form (ngSubmit)="onFlowSubmit()" class="modal-form">
+      <div class="form-group">
+        <label for="flow-name">Nome do Fluxo *</label>
+        <input
+          type="text"
+          id="flow-name"
+          class="form-control-flat"
+          placeholder="Ex: Atendimento ao Cliente"
+          required
+          [ngModel]="flowFormName()"
+          (ngModelChange)="flowFormName.set($event)"
+          name="flowName"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="flow-desc">Descrição</label>
+        <textarea
+          id="flow-desc"
+          class="form-control-flat"
+          rows="3"
+          placeholder="O que este fluxo faz?"
+          [ngModel]="flowFormDescription()"
+          (ngModelChange)="flowFormDescription.set($event)"
+          name="flowDesc"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="flow-integration">Integração Vinculada</label>
+        <select
+          id="flow-integration"
+          class="form-control-flat"
+          [ngModel]="flowFormIntegrationKey()"
+          (ngModelChange)="flowFormIntegrationKey.set($event)"
+          name="flowIntegration"
+        >
+          <option value="">-- Nenhuma Integração (Disparo direto/Indefinido) --</option>
+          <option 
+            *ngFor="let item of getConnectedIntegrations()" 
+            [value]="item.key"
+          >
+            {{ item.icon }} {{ item.name }}
+          </option>
+        </select>
+        <span class="field-hint">Selecione a integração que será utilizada para enviar as mensagens deste fluxo.</span>
+      </div>
+
+      <div class="form-group checkbox-group">
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            [ngModel]="flowFormIsActive()"
+            (ngModelChange)="flowFormIsActive.set($event)"
+            name="flowIsActive"
+          />
+          <span>Ativar Fluxo (Habilitado para execução)</span>
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" (click)="closeFlowModal()" class="btn-secondary-flat">
+          Cancelar
+        </button>
+        <button type="submit" class="btn-primary-flat" [disabled]="!flowFormName().trim()">
+          Salvar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Variable Form Modal -->
+<div class="modal-overlay" *ngIf="isVariableModalOpen()">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>{{ varFormId() ? 'Editar Variável' : 'Nova Variável' }}</h2>
+      <button (click)="closeVarModal()" class="btn-close-modal">×</button>
+    </div>
+
+    <form (ngSubmit)="onVarSubmit()" class="modal-form">
+      <div class="form-group">
+        <label for="var-name">Nome da Variável (Técnico) *</label>
+        <input
+          type="text"
+          id="var-name"
+          class="form-control-flat"
+          placeholder="Ex: telefone_celular"
+          required
+          [ngModel]="varFormName()"
+          (ngModelChange)="varFormName.set($event)"
+          name="varName"
+        />
+        <span class="field-hint">Apenas letras, números e underscores (_). Salvará em minúsculo.</span>
+      </div>
+
+      <div class="form-group">
+        <label for="var-type">Tipo de Variável</label>
+        <select
+          id="var-type"
+          class="form-control-flat"
+          [ngModel]="varFormType()"
+          (ngModelChange)="varFormType.set($event)"
+          name="varType"
+        >
+          <option value="Texto">Texto</option>
+          <option value="Número">Número</option>
+          <option value="Boolean">Boolean</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="var-default">Valor Padrão</label>
+        <input
+          type="text"
+          id="var-default"
+          class="form-control-flat"
+          placeholder="Ex: Não Informado"
+          [ngModel]="varFormDefaultValue()"
+          (ngModelChange)="varFormDefaultValue.set($event)"
+          name="varDefault"
+        />
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" (click)="closeVarModal()" class="btn-secondary-flat">
+          Cancelar
+        </button>
+        <button type="submit" class="btn-primary-flat" [disabled]="!varFormName().trim()">
+          Salvar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Chatwoot Credentials Modal -->
+<div class="modal-overlay" *ngIf="isChatwootModalOpen()">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>Configurar Chatwoot 🤖</h2>
+      <button (click)="closeChatwootModal()" class="btn-close-modal">×</button>
+    </div>
+
+    <form (ngSubmit)="saveChatwootConfig()" class="modal-form">
+      <div class="form-group">
+        <label for="cw-url">Endereço da Instalação (Chatwoot URL) *</label>
+        <input
+          type="text"
+          id="cw-url"
+          class="form-control-flat"
+          placeholder="Ex: https://chatwoot.meuservidor.com"
+          required
+          [ngModel]="chatwootUrl()"
+          (ngModelChange)="chatwootUrl.set($event)"
+          name="cwUrl"
+        />
+        <span class="field-hint">A URL completa onde o seu Chatwoot está hospedado.</span>
+      </div>
+
+      <div class="form-row-two-columns">
+        <div class="form-group">
+          <label for="cw-account">ID da Conta *</label>
+          <input
+            type="text"
+            id="cw-account"
+            class="form-control-flat"
+            placeholder="Ex: 1"
+            required
+            [ngModel]="chatwootAccountId()"
+            (ngModelChange)="chatwootAccountId.set($event)"
+            name="cwAccount"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="cw-inbox">ID da Inbox *</label>
+          <input
+            type="text"
+            id="cw-inbox"
+            class="form-control-flat"
+            placeholder="Ex: 5"
+            required
+            [ngModel]="chatwootInboxId()"
+            (ngModelChange)="chatwootInboxId.set($event)"
+            name="cwInbox"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="cw-token">Token de Acesso / API Key *</label>
+        <input
+          type="password"
+          id="cw-token"
+          class="form-control-flat"
+          placeholder="Digite o Token ou Chave de Acesso..."
+          required
+          [ngModel]="chatwootToken()"
+          (ngModelChange)="chatwootToken.set($event)"
+          name="cwToken"
+        />
+        <span class="field-hint">Token de agente ou token de API para autenticar as requisições.</span>
+      </div>
+
+      <!-- Webhook Helper field -->
+      <div class="form-group" style="margin-top: 1rem; border-top: 1px solid #f1f5f9; padding-top: 1rem;">
+        <label>URL do Webhook do Firebase (Copiar para o Chatwoot)</label>
+        <div style="display: flex; gap: 0.5rem; margin-top: 0.25rem;">
+          <input
+            type="text"
+            class="form-control-flat"
+            style="background-color: #f8fafc; cursor: text; flex: 1;"
+            [value]="getWebhookUrl()"
+            readonly
+            #webhookInput
+          />
+          <button 
+            type="button" 
+            (click)="copyWebhookUrl(webhookInput)" 
+            class="btn-primary-flat" 
+            style="white-space: nowrap; padding: 0 1rem; height: 38px; display: flex; align-items: center; justify-content: center;"
+          >
+            Copiar 📋
+          </button>
+        </div>
+        <span class="field-hint" style="color: var(--brand-700); font-weight: 500;">
+          Copie esta URL e cole no painel do Chatwoot (Configurações do Sistema > Integrações > Webhooks > Adicionar Novo Webhook). Selecione o evento <strong>message_created</strong>.
+        </span>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" (click)="closeChatwootModal()" class="btn-secondary-flat">
+          Cancelar
+        </button>
+        <button type="submit" class="btn-primary-flat" [disabled]="!chatwootUrl().trim() || !chatwootAccountId().trim() || !chatwootInboxId().trim() || !chatwootToken().trim()">
+          Salvar Integração
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Uazapi Credentials Modal -->
+<div class="modal-overlay" *ngIf="isUazapiModalOpen()">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>Configurar WhatsApp (Uazapi) 🟢</h2>
+      <button (click)="closeUazapiModal()" class="btn-close-modal">×</button>
+    </div>
+
+    <form (ngSubmit)="saveUazapiConfig()" class="modal-form">
+      <div class="form-group">
+        <label for="uazapi-url">URL Base da API (Base URL) *</label>
+        <input
+          type="text"
+          id="uazapi-url"
+          class="form-control-flat"
+          placeholder="Ex: https://api.uazapi.com.br"
+          required
+          [ngModel]="uazapiUrl()"
+          (ngModelChange)="uazapiUrl.set($event)"
+          name="uazapiUrl"
+        />
+        <span class="field-hint">A URL base da sua instalação ou servidor Uazapi.</span>
+      </div>
+
+      <div class="form-group">
+        <label for="uazapi-instance">ID da Instância (Instance ID) *</label>
+        <input
+          type="text"
+          id="uazapi-instance"
+          class="form-control-flat"
+          placeholder="Ex: minha_instancia_whatsapp"
+          required
+          [ngModel]="uazapiInstanceId()"
+          (ngModelChange)="uazapiInstanceId.set($event)"
+          name="uazapiInstanceId"
+        />
+        <span class="field-hint">O identificador da instância WhatsApp configurada no Uazapi.</span>
+      </div>
+
+      <div class="form-group">
+        <label for="uazapi-token">Token de API (Bearer Token / API Key) *</label>
+        <input
+          type="password"
+          id="uazapi-token"
+          class="form-control-flat"
+          placeholder="Digite a chave secreta da API..."
+          required
+          [ngModel]="uazapiToken()"
+          (ngModelChange)="uazapiToken.set($event)"
+          name="uazapiToken"
+        />
+        <span class="field-hint">O Token de autorização para autenticar os disparos de mensagens.</span>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" (click)="closeUazapiModal()" class="btn-secondary-flat">
+          Cancelar
+        </button>
+        <button type="submit" class="btn-primary-flat" [disabled]="!uazapiUrl().trim() || !uazapiInstanceId().trim() || !uazapiToken().trim()">
+          Salvar Integração
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

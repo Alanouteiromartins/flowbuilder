@@ -1,0 +1,28 @@
+services:
+  # Backend Node.js Express App
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: amchat-flowbuilder-backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+    volumes:
+      # Mount the firebase credentials dynamically (recommended for security)
+      - ./backend/serviceAccountKey.json:/app/serviceAccountKey.json:ro
+
+  # Frontend Angular App
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: amchat-flowbuilder-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend

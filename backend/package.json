@@ -1,0 +1,20 @@
+{
+  "name": "amchat-flowbuilder-backend",
+  "version": "1.0.0",
+  "description": "Custom backend for Amchat Flowbuilder to handle webhooks and proxies",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

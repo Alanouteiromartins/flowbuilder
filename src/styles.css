@@ -1,0 +1,166 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import 'sweetalert2/dist/sweetalert2.min.css';
+
+:root {
+  /* Brand - Inspiração Chatwoot (Azul) */
+  --brand-50: #e3efff;
+  --brand-100: #c7dffe;
+  --brand-200: #93c4fd;
+  --brand-300: #60a5fa;
+  --brand-400: #3b82f6;
+  --brand-500: #2781F6;
+  --brand-600: #1c6edc;
+  --brand-700: #125cc2;
+  --brand-800: #0c4ca3;
+  --brand-900: #083d82;
+
+  --color-brand: var(--brand-500);
+  --color-brand-hover: var(--brand-600);
+  --color-brand-active: var(--brand-700);
+  --color-brand-soft: var(--brand-50);
+  --color-brand-faint: #f4faff;
+
+  /* Neutros */
+  --slate-25: #fcfcfd;
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+
+  /* Textos */
+  --text-primary: var(--slate-900);
+  --text-secondary: var(--slate-700);
+  --text-muted: var(--slate-500);
+  --text-disabled: var(--slate-400);
+
+  /* Sucesso */
+  --green-50: #ecfdf5;
+  --green-100: #d1fae5;
+  --green-500: #22c55e;
+  --green-600: #16a34a;
+  --green-700: #15803d;
+
+  /* Alerta */
+  --yellow-50: #fffbeb;
+  --yellow-100: #fef3c7;
+  --yellow-500: #f59e0b;
+  --yellow-600: #d97706;
+
+  /* Erro */
+  --red-50: #fef2f2;
+  --red-100: #fee2e2;
+  --red-500: #ef4444;
+  --red-600: #dc2626;
+  --red-700: #b91c1c;
+
+  /* Roxo / IA / Recursos especiais */
+  --violet-50: #f5f3ff;
+  --violet-100: #ede9fe;
+  --violet-500: #8b5cf6;
+  --violet-600: #7c3aed;
+
+  /* Cores de Fundo */
+  --background-body: #f8fafc;
+  --background-app: #ffffff;
+  --background-sidebar: #ffffff;
+  --background-panel: #ffffff;
+  --background-muted: #f1f5f9;
+  --background-hover: #f8fafc;
+  --background-active: #e8f4ff;
+
+  /* Escala de Fontes - Chatwoot */
+  --font-size-xxs: 10px;
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-md: 14px;
+  --font-size-base: 15px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 24px;
+
+  /* Escala de Espaçamento - Chatwoot */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Bordas */
+  --border-subtle: #f1f5f9;
+  --border-default: #e2e8f0;
+  --border-strong: #cbd5e1;
+
+  /* Radius */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 999px;
+
+  /* Sombras */
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.10);
+  --shadow-lg: 0 12px 24px rgba(15, 23, 42, 0.12);
+
+  /* Transições */
+  --transition-fast: 120ms ease;
+  --transition-default: 180ms ease;
+  --transition-slow: 240ms ease;
+
+  /* Fontes */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.dark {
+  --background-body: #0f172a;
+  --background-app: #111827;
+  --background-sidebar: #0b1120;
+  --background-panel: #111827;
+  --background-muted: #1e293b;
+  --background-hover: #1e293b;
+  --background-active: #102a43;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-disabled: #64748b;
+
+  --border-subtle: #1e293b;
+  --border-default: #334155;
+  --border-strong: #475569;
+
+  --brand-500: #2781F6;
+  --brand-soft: #083d82;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  background-color: var(--background-body);
+  color: var(--text-primary);
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}

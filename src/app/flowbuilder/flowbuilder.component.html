@@ -1,0 +1,1946 @@
+<div class="builder-layout">
+  <!-- Horizontal Top Navbar -->
+  <header class="builder-header">
+    <div class="header-left">
+      <a [routerLink]="['/projects', projectId()]" class="btn-back">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="back-icon">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>
+        <span>Voltar</span>
+      </a>
+      <span class="header-divider">/</span>
+      <div class="breadcrumbs">
+        <span class="breadcrumb-item">{{ projectName() || 'Projeto' }}</span>
+        <span class="header-divider">></span>
+        <span class="breadcrumb-item active">{{ flowName() || 'Desenhar Fluxo' }}</span>
+      </div>
+    </div>
+    <div class="header-right" style="position: relative; display: flex; align-items: center; gap: 1.25rem;">
+      <!-- Bot Activation Toggle Switch -->
+      <div class="bot-toggle-container">
+        <span class="toggle-label">Bot Ativo</span>
+        <button 
+          type="button" 
+          class="switch-btn" 
+          [class.active]="flowIsActive()"
+          (click)="toggleFlowActive()"
+          [title]="flowIsActive() ? 'Desativar Bot' : 'Ativar Bot'"
+        >
+          <span class="switch-handle"></span>
+        </button>
+      </div>
+
+      <span class="builder-tag">Editor de Fluxo</span>
+      
+      <!-- Variables Trigger Button -->
+      <button 
+        type="button" 
+        class="btn-header-variables" 
+        (click)="toggleVariablesPopover($event)"
+        [class.active]="showVariablesPopover()"
+      >
+        <span>📋 Variáveis</span>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="chevron-icon" [style.transform]="showVariablesPopover() ? 'rotate(180deg)' : 'rotate(0)'">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+        </svg>
+      </button>
+
+      <!-- Popover Container -->
+      <div class="variables-popover" *ngIf="showVariablesPopover()" (click)="$event.stopPropagation()">
+        <div class="popover-arrow"></div>
+        <div class="popover-header">
+          <h4>Dicionário de Variáveis</h4>
+          <p>Selecione uma tag para copiar seu nome técnico:</p>
+        </div>
+
+        <!-- Popover Tabs Headers -->
+        <div class="popover-tabs">
+          <button 
+            type="button" 
+            class="tab-btn" 
+            [class.active]="activeVariableTab() === 'system'"
+            (click)="activeVariableTab.set('system')"
+          >
+            Sistema 🤖
+          </button>
+          <button 
+            type="button" 
+            class="tab-btn" 
+            [class.active]="activeVariableTab() === 'project'"
+            (click)="activeVariableTab.set('project')"
+          >
+            Projeto 📁
+          </button>
+        </div>
+
+        <!-- Popover Content Area -->
+        <div class="popover-content">
+          <!-- Tab: System -->
+          <div class="tab-pane" *ngIf="activeVariableTab() === 'system'">
+            <div class="vars-catalog-list">
+              <div class="var-catalog-item" (click)="copyToClipboard('{mensagem}')" title="Última mensagem recebida do cliente">
+                <code class="var-tag-code">{{ '{' }}mensagem{{ '}' }}</code>
+                <span class="var-desc">Mensagem recebida</span>
+              </div>
+              <div class="var-catalog-item" (click)="copyToClipboard('{nome_cliente}')" title="Nome do cliente cadastrado no Chatwoot">
+                <code class="var-tag-code">{{ '{' }}nome_cliente{{ '}' }}</code>
+                <span class="var-desc">Nome do cliente</span>
+              </div>
+              <div class="var-catalog-item" (click)="copyToClipboard('{telefone_cliente}')" title="Telefone/WhatsApp do cliente cadastrado no Chatwoot">
+                <code class="var-tag-code">{{ '{' }}telefone_cliente{{ '}' }}</code>
+                <span class="var-desc">Telefone do cliente</span>
+              </div>
+              <div class="var-catalog-item" (click)="copyToClipboard('{email_cliente}')" title="E-mail do cliente cadastrado no Chatwoot">
+                <code class="var-tag-code">{{ '{' }}email_cliente{{ '}' }}</code>
+                <span class="var-desc">E-mail do cliente</span>
+              </div>
+              <div class="var-catalog-item" (click)="copyToClipboard('{id_conversa}')" title="ID interno da conversa no banco de dados">
+                <code class="var-tag-code">{{ '{' }}id_conversa{{ '}' }}</code>
+                <span class="var-desc">ID da conversa</span>
+              </div>
+              <div class="var-catalog-item" (click)="copyToClipboard('{codigo_atendimento}')" title="Código de atendimento sequencial visível no painel (display_id)">
+                <code class="var-tag-code">{{ '{' }}codigo_atendimento{{ '}' }}</code>
+                <span class="var-desc">Código do chat</span>
+              </div>
+              <div class="var-catalog-item" (click)="copyToClipboard('{status_conversa}')" title="Status atual da conversa (open, resolved, etc.)">
+                <code class="var-tag-code">{{ '{' }}status_conversa{{ '}' }}</code>
+                <span class="var-desc">Status do chat</span>
+              </div>
+              <div class="var-catalog-item" (click)="copyToClipboard('{id_caixa_entrada}')" title="ID da Caixa de Entrada (Inbox ID) no Chatwoot">
+                <code class="var-tag-code">{{ '{' }}id_caixa_entrada{{ '}' }}</code>
+                <span class="var-desc">ID da inbox</span>
+              </div>
+              <div class="var-catalog-item" (click)="copyToClipboard('{id_cliente}')" title="ID único de contato do remetente no Chatwoot">
+                <code class="var-tag-code">{{ '{' }}id_cliente{{ '}' }}</code>
+                <span class="var-desc">ID do cliente</span>
+              </div>
+              <div class="var-catalog-item" (click)="copyToClipboard('{tipo_mensagem}')" title="Tipo da mensagem recebida (incoming, outgoing)">
+                <code class="var-tag-code">{{ '{' }}tipo_mensagem{{ '}' }}</code>
+                <span class="var-desc">Tipo da msg</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab: Project -->
+          <div class="tab-pane" *ngIf="activeVariableTab() === 'project'">
+            <div class="vars-catalog-list" *ngIf="variables().length > 0; else noCustomVars">
+              <div 
+                class="var-catalog-item" 
+                *ngFor="let v of variables()" 
+                (click)="copyToClipboard('{' + v.name + '}')" 
+                [title]="'Valor padrão: ' + (v.defaultValue || 'vazio')"
+              >
+                <code class="var-tag-code">{{ '{' }}{{ v.name }}{{ '}' }}</code>
+                <span class="var-desc">{{ v.type }}</span>
+              </div>
+            </div>
+            <ng-template #noCustomVars>
+              <span class="no-vars-hint">Nenhuma variável customizada criada para este projeto.</span>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Split Screen: Components (Left) + Canvas (Center) + Properties (Right) -->
+  <div class="builder-body">
+    <!-- 1. Left Sidebar: Available Components Selector -->
+    <aside class="components-sidebar">
+      <div class="sidebar-section">
+        <h3 class="sidebar-section-title">Componentes</h3>
+        <p class="sidebar-help-text">Clique nos blocos abaixo para adicioná-los ao canvas:</p>
+        
+        <div class="components-list">
+          <!-- 1. BLOCOS GERAIS / BÁSICOS -->
+          <div class="component-group-title">Fluxo Básico</div>
+
+          <button (click)="addConditionalComponent()" class="component-drag-btn component-conditional-btn">
+            <span class="component-icon">
+              <svg class="component-icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v6m0 0a4 4 0 00-4 4v8m4-12a4 4 0 014 4v8" />
+              </svg>
+            </span>
+            <div class="component-info">
+              <span class="component-label">Condicional SE</span>
+            </div>
+          </button>
+
+          <button (click)="addQuestionComponent()" class="component-drag-btn component-question-btn">
+            <span class="component-icon">
+              <svg class="component-icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </span>
+            <div class="component-info">
+              <span class="component-label">Fazer Pergunta</span>
+            </div>
+          </button>
+
+          <button (click)="addHttpRequestComponent()" class="component-drag-btn component-http-btn">
+            <span class="component-icon">
+              <svg class="component-icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+              </svg>
+            </span>
+            <div class="component-info">
+              <span class="component-label">Requisição HTTP</span>
+            </div>
+          </button>
+
+          <button (click)="addTimeCheckComponent()" class="component-drag-btn component-time-btn">
+            <span class="component-icon">
+              <svg class="component-icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+            </span>
+            <div class="component-info">
+              <span class="component-label">Verificar Horário</span>
+            </div>
+          </button>
+
+          <button (click)="addFinishComponent()" class="component-drag-btn component-finish-btn">
+            <span class="component-icon">
+              <svg class="component-icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
+            </span>
+            <div class="component-info">
+              <span class="component-label">Finalizar Fluxo</span>
+            </div>
+          </button>
+
+          <!-- 2. UAZAPI WHATSAPP COMPONENTS -->
+          <ng-container *ngIf="isUazapiConnected()">
+            <div class="component-group-header group-uazapi">
+              <span class="group-dot dot-active"></span>
+              <span class="group-title">WhatsApp (Uazapi)</span>
+            </div>
+
+            <button (click)="addUazapiSendTextComponent()" class="component-drag-btn component-uazapi-send-text-btn">
+              <span class="component-icon">
+                <svg class="component-icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+              </span>
+              <div class="component-info">
+                <span class="component-label">Enviar TXT Uazapi</span>
+              </div>
+            </button>
+
+            <button (click)="addUazapiButtonsComponent()" class="component-drag-btn component-uazapi-btn">
+              <span class="component-icon">
+                <svg class="component-icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <rect x="4" y="6" width="16" height="12" rx="2" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6" />
+                </svg>
+              </span>
+              <div class="component-info">
+                <span class="component-label">Botões Uazapi</span>
+              </div>
+            </button>
+
+            <button (click)="addUazapiListComponent()" class="component-drag-btn component-uazapi-list-btn">
+              <span class="component-icon">
+                <svg class="component-icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                </svg>
+              </span>
+              <div class="component-info">
+                <span class="component-label">Lista Uazapi</span>
+              </div>
+            </button>
+          </ng-container>
+
+          <!-- 3. CHATWOOT COMPONENTS -->
+          <ng-container *ngIf="isChatwootConnected()">
+            <div class="component-group-header group-chatwoot">
+              <span class="group-dot dot-active"></span>
+              <span class="group-title">Chatwoot</span>
+            </div>
+
+            <button (click)="addMessageComponent()" class="component-drag-btn component-message-btn">
+              <span class="component-icon">
+                <svg class="component-icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+              </span>
+              <div class="component-info">
+                <span class="component-label">Enviar Mensagem</span>
+              </div>
+            </button>
+
+            <button (click)="addChatwootLabelComponent()" class="component-drag-btn component-label-btn">
+              <span class="component-icon">
+                <svg class="component-icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H4.5v5.068a1.5 1.5 0 00.44 1.06l10.5 10.5a1.5 1.5 0 002.12 0l4.5-4.5a1.5 1.5 0 000-2.12l-10.5-10.5a1.5 1.5 0 00-1.06-.44zM7.5 7.5h.008v.008H7.5V7.5z" />
+                </svg>
+              </span>
+              <div class="component-info">
+                <span class="component-label">Gerenciar Etiqueta</span>
+              </div>
+            </button>
+
+            <button (click)="addChatwootAgentComponent()" class="component-drag-btn component-label-btn">
+              <span class="component-icon">
+                <svg class="component-icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </span>
+              <div class="component-info">
+                <span class="component-label">Gerenciar Agente</span>
+              </div>
+            </button>
+
+            <button (click)="addChatwootTeamComponent()" class="component-drag-btn component-label-btn">
+              <span class="component-icon">
+                <svg class="component-icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </span>
+              <div class="component-info">
+                <span class="component-label">Gerenciar Equipe</span>
+              </div>
+            </button>
+          </ng-container>
+
+          <!-- Placeholder when no integrations connected -->
+          <div *ngIf="!isChatwootConnected() && !isUazapiConnected()" class="integration-placeholder-card">
+            <div class="placeholder-icon-wrap">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="plug-icon">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z" />
+              </svg>
+            </div>
+            <h4>Integrações Inativas</h4>
+            <p>Ative o Chatwoot ou WhatsApp nas configurações para liberar mais blocos.</p>
+            <a [routerLink]="['/projects', projectId()]" [queryParams]="{tab: 'integrations'}" class="btn-placeholder-link">
+              <span>Configurar</span>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="arrow-right-icon">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 2. Central Drawing Canvas -->
+    <main 
+      class="drawing-canvas"
+      (mousedown)="onCanvasMouseDown($event)"
+      (mousemove)="onCanvasMouseMove($event)"
+      (mouseup)="onCanvasMouseUp()"
+      (mouseleave)="onCanvasMouseUp()"
+      (click)="selectNode(null)"
+    >
+      <!-- Connections SVG Layer -->
+      <svg class="connections-layer">
+        <defs>
+          <marker 
+            id="arrow" 
+            viewBox="0 0 10 10" 
+            refX="6" 
+            refY="5" 
+            markerWidth="6" 
+            markerHeight="6" 
+            orient="auto-start-reverse"
+          >
+            <path d="M 0 2 L 8 5 L 0 8 z" fill="#94a3b8" />
+          </marker>
+        </defs>
+
+        <line 
+          *ngFor="let line of connections()"
+          [attr.x1]="line.x1" 
+          [attr.y1]="line.y1" 
+          [attr.x2]="line.x2" 
+          [attr.y2]="line.y2" 
+          [class]="'connection-line ' + (line.type ? line.type + '-path' : '')"
+          marker-end="url(#arrow)"
+        />
+      </svg>
+
+      <!-- Draggable Node Cards -->
+      <div 
+        *ngFor="let node of nodes()"
+        class="node-card"
+        [class.selected]="selectedNode()?.id === node.id"
+        [class.node-http]="node.type === 'http_request'"
+        [class.node-conditional]="node.type === 'conditional'"
+        [class.node-uazapi]="node.type === 'uazapi_buttons'"
+        [class.node-uazapi-list]="node.type === 'uazapi_list'"
+        [class.node-uazapi-send-text]="node.type === 'uazapi_send_text'"
+        [class.node-question]="node.type === 'question'"
+        [class.node-chatwoot-label]="node.type === 'chatwoot_label' || node.type === 'chatwoot_agent' || node.type === 'chatwoot_team'"
+        [class.node-time-check]="node.type === 'time_check'"
+        [class.node-finish]="node.type === 'finish'"
+        [class.node-start]="node.type === 'start'"
+        [style.left.px]="node.x"
+        [style.top.px]="node.y"
+        (mousedown)="onNodeMouseDown($event, node)"
+        (click)="$event.stopPropagation()"
+      >
+        <!-- Connector Anchors -->
+        <span class="connector-anchor anchor-left" *ngIf="node.type !== 'start'"></span>
+        
+        <ng-container *ngIf="node.type !== 'conditional' && node.type !== 'time_check' && node.type !== 'uazapi_buttons' && node.type !== 'uazapi_list' && node.type !== 'finish'; else conditionalOrUazapiAnchors">
+          <span class="connector-anchor anchor-right"></span>
+        </ng-container>
+        <ng-template #conditionalOrUazapiAnchors>
+          <ng-container *ngIf="node.type === 'conditional' || node.type === 'time_check'">
+            <span class="connector-anchor anchor-true" title="Dentro do Horário (Verdadeiro)"></span>
+            <span class="connector-anchor anchor-false" title="Fora do Horário (Falso)"></span>
+          </ng-container>
+          <ng-container *ngIf="node.type === 'uazapi_buttons'">
+            <span class="connector-anchor anchor-b1" title="Opção 1"></span>
+            <span class="connector-anchor anchor-b2" title="Opção 2"></span>
+            <span class="connector-anchor anchor-b3" title="Opção 3"></span>
+            <span class="connector-anchor anchor-fb" title="Fallback (Outros)"></span>
+          </ng-container>
+          <ng-container *ngIf="node.type === 'uazapi_list'">
+            <span class="connector-anchor anchor-b1" title="Opção 1"></span>
+            <span class="connector-anchor anchor-b2" title="Opção 2"></span>
+            <span class="connector-anchor anchor-b3" title="Opção 3"></span>
+            <span class="connector-anchor anchor-b4" title="Opção 4"></span>
+            <span class="connector-anchor anchor-b5" title="Opção 5"></span>
+            <span class="connector-anchor anchor-b6" title="Opção 6"></span>
+            <span class="connector-anchor anchor-fb" title="Fallback (Outros)"></span>
+          </ng-container>
+        </ng-template>
+
+        <!-- Card Header -->
+        <div class="node-card-header">
+          <span class="node-type-icon">
+            <ng-container [ngSwitch]="node.type">
+              <svg *ngSwitchCase="'start'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+              <svg *ngSwitchCase="'message'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+              <svg *ngSwitchCase="'http_request'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
+              <svg *ngSwitchCase="'conditional'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v6m0 0a4 4 0 00-4 4v8m4-12a4 4 0 014 4v8" /></svg>
+              <svg *ngSwitchCase="'uazapi_buttons'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><rect x="4" y="6" width="16" height="12" rx="2" /><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6" /></svg>
+              <svg *ngSwitchCase="'uazapi_list'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
+              <svg *ngSwitchCase="'uazapi_send_text'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+              <svg *ngSwitchCase="'question'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <svg *ngSwitchCase="'chatwoot_label'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H4.5v5.068a1.5 1.5 0 00.44 1.06l10.5 10.5a1.5 1.5 0 002.12 0l4.5-4.5a1.5 1.5 0 000-2.12l-10.5-10.5a1.5 1.5 0 00-1.06-.44zM7.5 7.5h.008v.008H7.5V7.5z" /></svg>
+              <svg *ngSwitchCase="'chatwoot_agent'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+              <svg *ngSwitchCase="'chatwoot_team'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+              <svg *ngSwitchCase="'time_check'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+              <svg *ngSwitchCase="'finish'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+            </ng-container>
+          </span>
+          <span class="node-name-text">{{ node.type === 'finish' ? 'Fim' : node.name }}</span>
+        </div>
+
+        <!-- Card Preview Body -->
+        <div class="node-card-body" *ngIf="node.type !== 'start' && node.type !== 'finish'">
+          <!-- Chatwoot Label preview -->
+          <div class="node-preview-label" *ngIf="node.type === 'chatwoot_label'">
+            <!-- Action: Clear -->
+            <span class="uazapi-choice-badge" *ngIf="node.chatwootLabelAction === 'clear'" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border-color: rgba(239, 68, 68, 0.3); font-size: 0.75rem; padding: 0.15rem 0.4rem; border-radius: 4px; display: inline-block; white-space: nowrap;">
+              🧹 Limpar todas
+            </span>
+            
+            <!-- Action: Remove -->
+            <ng-container *ngIf="node.chatwootLabelAction === 'remove'">
+              <span class="uazapi-choice-badge" *ngIf="node.chatwootLabelName" style="background: rgba(249, 115, 22, 0.15); color: #f97316; border-color: rgba(249, 115, 22, 0.3); font-size: 0.75rem; padding: 0.15rem 0.4rem; border-radius: 4px; display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;" title="Remover: {{ node.chatwootLabelName }}">
+                ➖ {{ node.chatwootLabelName }}
+              </span>
+              <span *ngIf="!node.chatwootLabelName" style="color: #94a3b8; font-size: 0.7rem; font-style: italic;">
+                Remover etiqueta (vazia)
+              </span>
+            </ng-container>
+
+            <!-- Action: Add / Default -->
+            <ng-container *ngIf="node.chatwootLabelAction === 'add' || !node.chatwootLabelAction">
+              <span class="uazapi-choice-badge" *ngIf="node.chatwootLabelName" style="background: rgba(56, 189, 248, 0.15); color: #0284c7; border-color: rgba(56, 189, 248, 0.3); font-size: 0.75rem; padding: 0.15rem 0.4rem; border-radius: 4px; display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;" title="Adicionar: {{ node.chatwootLabelName }}">
+                ➕ {{ node.chatwootLabelName }}
+              </span>
+              <span *ngIf="!node.chatwootLabelName" style="color: #94a3b8; font-size: 0.7rem; font-style: italic;">
+                Nenhuma etiqueta
+              </span>
+            </ng-container>
+          </div>
+
+          <!-- Chatwoot Agent preview -->
+          <div class="node-preview-label" *ngIf="node.type === 'chatwoot_agent'">
+            <!-- Action: Unassign -->
+            <span class="uazapi-choice-badge" *ngIf="node.chatwootAgentAction === 'unassign'" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border-color: rgba(239, 68, 68, 0.3); font-size: 0.75rem; padding: 0.15rem 0.4rem; border-radius: 4px; display: inline-block; white-space: nowrap;">
+              👤 Remover Agente
+            </span>
+            
+            <!-- Action: Assign / Default -->
+            <ng-container *ngIf="node.chatwootAgentAction === 'assign' || !node.chatwootAgentAction">
+              <span class="uazapi-choice-badge" *ngIf="node.chatwootAgentName" style="background: rgba(56, 189, 248, 0.15); color: #0284c7; border-color: rgba(56, 189, 248, 0.3); font-size: 0.75rem; padding: 0.15rem 0.4rem; border-radius: 4px; display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;" title="Atribuir: {{ node.chatwootAgentName }}">
+                👤 {{ node.chatwootAgentName }}
+              </span>
+              <span *ngIf="!node.chatwootAgentName" style="color: #94a3b8; font-size: 0.7rem; font-style: italic;">
+                Nenhum agente
+              </span>
+            </ng-container>
+          </div>
+
+          <!-- Chatwoot Team preview -->
+          <div class="node-preview-label" *ngIf="node.type === 'chatwoot_team'">
+            <!-- Action: Unassign -->
+            <span class="uazapi-choice-badge" *ngIf="node.chatwootTeamAction === 'unassign'" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border-color: rgba(239, 68, 68, 0.3); font-size: 0.75rem; padding: 0.15rem 0.4rem; border-radius: 4px; display: inline-block; white-space: nowrap;">
+              👥 Remover Equipe
+            </span>
+            
+            <!-- Action: Assign / Default -->
+            <ng-container *ngIf="node.chatwootTeamAction === 'assign' || !node.chatwootTeamAction">
+              <span class="uazapi-choice-badge" *ngIf="node.chatwootTeamName" style="background: rgba(56, 189, 248, 0.15); color: #0284c7; border-color: rgba(56, 189, 248, 0.3); font-size: 0.75rem; padding: 0.15rem 0.4rem; border-radius: 4px; display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;" title="Atribuir: {{ node.chatwootTeamName }}">
+                👥 {{ node.chatwootTeamName }}
+              </span>
+              <span *ngIf="!node.chatwootTeamName" style="color: #94a3b8; font-size: 0.7rem; font-style: italic;">
+                Nenhuma equipe
+              </span>
+            </ng-container>
+          </div>
+
+          <!-- Question Node preview -->
+          <div class="node-preview-question" *ngIf="node.type === 'question'">
+            <p class="node-preview-text" *ngIf="node.questionText" style="margin-bottom: 0.25rem;">
+              {{ (node.questionText.length > 35) ? (node.questionText | slice:0:35) + '...' : node.questionText }}
+            </p>
+            <span class="uazapi-choice-badge" *ngIf="node.saveVariableName" style="background: rgba(168, 85, 247, 0.15); color: #a855f7; border-color: rgba(168, 85, 247, 0.3); font-size: 0.65rem; padding: 0.1rem 0.35rem; border-radius: 4px; display: inline-block;">
+              💾 salvar: {{ '{' }}{{ node.saveVariableName }}{{ '}' }}
+            </span>
+          </div>
+
+          <!-- Text Message preview -->
+          <p class="node-preview-text" *ngIf="(node.type === 'message' || node.type === 'uazapi_send_text') && node.messageText">
+            {{ (node.messageText.length > 55) ? (node.messageText | slice:0:55) + '...' : node.messageText }}
+          </p>
+          
+          <!-- HTTP Request preview -->
+          <div class="node-preview-http" *ngIf="node.type === 'http_request'">
+            <span class="http-method-badge" [attr.data-method]="node.httpMethod">
+              {{ node.httpMethod }}
+            </span>
+            <span class="http-url-preview">
+              {{ (node.httpUrl && node.httpUrl.length > 30) ? (node.httpUrl | slice:0:30) + '...' : node.httpUrl }}
+            </span>
+          </div>
+
+          <!-- Conditional preview -->
+          <div class="node-preview-conditional" *ngIf="node.type === 'conditional'">
+            <div class="condition-expr-preview">
+              <span class="var-expr">{{ node.conditionVariable || 'Variável' }}</span>
+              <span class="op-expr">{{ getOperatorSymbol(node.conditionOperator) }}</span>
+              <span class="val-expr" *ngIf="node.conditionOperator !== 'exists' && node.conditionOperator !== 'not_exists'">
+                {{ node.conditionValue || 'Valor' }}
+              </span>
+            </div>
+            <div class="conditional-branches-preview">
+              <span class="branch-tag branch-true">V</span>
+              <span class="branch-tag branch-false">F</span>
+            </div>
+          </div>
+
+          <!-- Time Check preview -->
+          <div class="node-preview-time-check" *ngIf="node.type === 'time_check'">
+            <span class="time-range-preview">
+              ⏰ {{ (node.timeStartHour | number:'2.0-0') }}:{{ (node.timeStartMinute | number:'2.0-0') }} - {{ (node.timeEndHour | number:'2.0-0') }}:{{ (node.timeEndMinute | number:'2.0-0') }}
+            </span>
+            <span class="time-days-preview" *ngIf="node.timeWeekdays">
+              📅 {{ node.timeWeekdays.length === 7 ? 'Todos os dias' : node.timeWeekdays.length === 5 && !node.timeWeekdays.includes('6') && !node.timeWeekdays.includes('7') ? 'Segunda a Sexta' : node.timeWeekdays.length === 0 ? 'Nenhum dia' : 'Dias personalizados (' + node.timeWeekdays.length + ')' }}
+            </span>
+          </div>
+
+
+          <!-- Uazapi Buttons preview -->
+          <div class="node-preview-uazapi" *ngIf="node.type === 'uazapi_buttons'">
+            <div class="uazapi-choices-preview">
+              <span class="uazapi-choice-badge" *ngIf="node.button1Label">① {{ node.button1Label }}</span>
+              <span class="uazapi-choice-badge" *ngIf="node.button2Label">② {{ node.button2Label }}</span>
+              <span class="uazapi-choice-badge" *ngIf="node.button3Label">③ {{ node.button3Label }}</span>
+              <span class="uazapi-choice-badge badge-fallback">⚙ Fallback</span>
+            </div>
+          </div>
+
+          <!-- Uazapi List preview -->
+          <div class="node-preview-uazapi" *ngIf="node.type === 'uazapi_list'">
+            <div class="uazapi-choices-preview" style="display: flex; flex-wrap: wrap; gap: 0.15rem; width: 100%;">
+              <span class="uazapi-choice-badge" *ngIf="node.button1Label">① {{ (node.button1Label.length > 8) ? (node.button1Label | slice:0:8) + '..' : node.button1Label }}</span>
+              <span class="uazapi-choice-badge" *ngIf="node.button2Label">② {{ (node.button2Label.length > 8) ? (node.button2Label | slice:0:8) + '..' : node.button2Label }}</span>
+              <span class="uazapi-choice-badge" *ngIf="node.button3Label">③ {{ (node.button3Label.length > 8) ? (node.button3Label | slice:0:8) + '..' : node.button3Label }}</span>
+              <span class="uazapi-choice-badge" *ngIf="node.button4Label">④ {{ (node.button4Label.length > 8) ? (node.button4Label | slice:0:8) + '..' : node.button4Label }}</span>
+              <span class="uazapi-choice-badge" *ngIf="node.button5Label">⑤ {{ (node.button5Label.length > 8) ? (node.button5Label | slice:0:8) + '..' : node.button5Label }}</span>
+              <span class="uazapi-choice-badge" *ngIf="node.button6Label">⑥ {{ (node.button6Label.length > 8) ? (node.button6Label | slice:0:8) + '..' : node.button6Label }}</span>
+              <span class="uazapi-choice-badge badge-fallback">⚙ Fallback</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Instruction overlay when canvas is empty -->
+      <div class="canvas-empty-overlay" *ngIf="nodes().length === 0">
+        <p>O seu fluxo está vazio. Adicione um componente na barra lateral esquerda para começar!</p>
+      </div>
+    </main>
+
+    <!-- 3. Right Sidebar: Properties Configuration Panel -->
+    <aside class="properties-sidebar">
+      <h3 class="sidebar-section-title">Propriedades</h3>
+
+      <div class="properties-panel-content" *ngIf="selectedNode()">
+        
+        <!-- ==================== PROPERTIES: START NODE ==================== -->
+        <ng-container *ngIf="selectedNode()?.type === 'start'">
+          <div class="prop-group start-node-help">
+            <span class="start-node-badge">⚡ Bloco de Início</span>
+            <p class="start-node-desc">
+              Este é o ponto de partida do seu fluxo de conversa. Ele indica onde o atendimento é disparado.
+            </p>
+            <p class="start-node-hint">
+              Conecte a saída deste bloco ao primeiro componente do seu fluxo (Mensagem ou Requisição HTTP) nas propriedades abaixo.
+            </p>
+          </div>
+        </ng-container>
+
+        <!-- ==================== PROPERTIES: MESSAGE NODE ==================== -->
+        <ng-container *ngIf="selectedNode()?.type === 'message'">
+          <!-- Name -->
+          <div class="prop-group">
+            <label for="prop-name">Identificação do Bloco</label>
+            <input
+              type="text"
+              id="prop-name"
+              class="prop-control"
+              [ngModel]="selectedNode()?.name"
+              (ngModelChange)="updateSelectedNodeProperties({name: $event})"
+            />
+          </div>
+
+          <!-- Message Text -->
+          <div class="prop-group">
+            <label for="prop-text">Texto da Mensagem</label>
+            <textarea
+              id="prop-text"
+              class="prop-control"
+              rows="6"
+              placeholder="Digite a mensagem do chatbot..."
+              [ngModel]="selectedNode()?.messageText"
+              (ngModelChange)="updateSelectedNodeProperties({messageText: $event})"
+            ></textarea>
+          </div>
+
+          <!-- Chatwoot Integration Live Test -->
+          <div class="prop-group chatwoot-test-section" *ngIf="flowIntegrationKey() === 'chatwoot' && chatwootConfig()">
+            <label class="integration-test-title">🤖 Envio via Chatwoot Ativo</label>
+            <span class="helper-subtitle">Teste o envio da mensagem deste bloco diretamente em uma conversa ativa do Chatwoot:</span>
+            
+            <div class="form-group-test" style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.25rem;">
+              <label for="cw-test-conv-id" style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;">ID da Conversa de Teste *</label>
+              <input
+                type="text"
+                id="cw-test-conv-id"
+                class="prop-control"
+                placeholder="Ex: 42"
+                [(ngModel)]="chatwootTestConversationId"
+              />
+            </div>
+
+            <button 
+              type="button" 
+              (click)="testChatwootSendMessage()" 
+              [disabled]="isTestingChatwoot() || !chatwootTestConversationId"
+              class="btn-test-chatwoot"
+            >
+              <span *ngIf="isTestingChatwoot()">Enviando...</span>
+              <span *ngIf="!isTestingChatwoot()">Disparar no Chatwoot ⚡</span>
+            </button>
+
+            <!-- Box do Resultado do Envio -->
+            <div class="chatwoot-test-result-box" *ngIf="chatwootTestResult()">
+              <div class="test-result-header" [class.result-success]="chatwootTestResult()?.success">
+                <span class="status-badge" [class.badge-success]="chatwootTestResult()?.success" [class.badge-error]="!chatwootTestResult()?.success">
+                  {{ chatwootTestResult()?.status }} {{ chatwootTestResult()?.statusText }}
+                </span>
+              </div>
+              <div class="test-result-body">
+                {{ chatwootTestResult()?.message }}
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- ==================== PROPERTIES: UAZAPI SEND TEXT NODE ==================== -->
+        <ng-container *ngIf="selectedNode()?.type === 'uazapi_send_text'">
+          <!-- Name -->
+          <div class="prop-group">
+            <label for="prop-name">Identificação do Bloco</label>
+            <input
+              type="text"
+              id="prop-name"
+              class="prop-control"
+              [ngModel]="selectedNode()?.name"
+              (ngModelChange)="updateSelectedNodeProperties({name: $event})"
+            />
+          </div>
+
+          <!-- Message Text -->
+          <div class="prop-group">
+            <label for="prop-text">Texto da Mensagem (WhatsApp)</label>
+            <textarea
+              id="prop-text"
+              class="prop-control"
+              rows="6"
+              placeholder="Digite a mensagem do chatbot..."
+              [ngModel]="selectedNode()?.messageText"
+              (ngModelChange)="updateSelectedNodeProperties({messageText: $event})"
+            ></textarea>
+          </div>
+        </ng-container>
+
+        <!-- ==================== PROPERTIES: QUESTION NODE ==================== -->
+        <ng-container *ngIf="selectedNode()?.type === 'question'">
+          <!-- Name -->
+          <div class="prop-group">
+            <label for="prop-question-name">Identificação do Bloco</label>
+            <input
+              type="text"
+              id="prop-question-name"
+              class="prop-control"
+              [ngModel]="selectedNode()?.name"
+              (ngModelChange)="updateSelectedNodeProperties({name: $event})"
+            />
+          </div>
+
+          <!-- Question Text -->
+          <div class="prop-group">
+            <label for="prop-question-text">Texto da Pergunta</label>
+            <textarea
+              id="prop-question-text"
+              class="prop-control"
+              rows="6"
+              placeholder="Digite a pergunta do chatbot (ex: Qual o seu nome?)..."
+              [ngModel]="selectedNode()?.questionText"
+              (ngModelChange)="updateSelectedNodeProperties({questionText: $event})"
+            ></textarea>
+          </div>
+
+          <!-- Variable to save to -->
+          <div class="prop-group">
+            <label for="prop-save-var">Salvar Resposta na Variável</label>
+            <select
+              id="prop-save-var"
+              class="prop-control select-control"
+              [ngModel]="selectedNode()?.saveVariableName"
+              (ngModelChange)="updateSelectedNodeProperties({saveVariableName: $event})"
+            >
+              <option value="">-- Selecione uma variável --</option>
+              <option *ngFor="let v of variables()" [value]="v.name">
+                {{ v.name }} ({{ v.type }})
+              </option>
+            </select>
+            <p class="prop-help-hint" style="font-size: 0.65rem; color: #64748b; margin-top: 0.25rem;">
+              Crie variáveis no dicionário do projeto clicando em "📋 Variáveis" no topo para listá-las aqui.
+            </p>
+          </div>
+        </ng-container>
+
+        <!-- ==================== PROPERTIES: HTTP REQUEST NODE ==================== -->
+        <ng-container *ngIf="selectedNode()?.type === 'http_request'">
+          <!-- Name -->
+          <div class="prop-group">
+            <label for="prop-http-name">Identificação do Bloco</label>
+            <input
+              type="text"
+              id="prop-http-name"
+              class="prop-control"
+              [ngModel]="selectedNode()?.name"
+              (ngModelChange)="updateSelectedNodeProperties({name: $event})"
+            />
+          </div>
+
+          <!-- cURL Auto-Import Tool -->
+          <div class="prop-group curl-import-section">
+            <div class="curl-import-header">
+              <button type="button" (click)="toggleCurlImport()" class="btn-toggle-curl">
+                {{ showCurlInput() ? '✕ Cancelar Importação' : '📥 Importar Comando cURL' }}
+              </button>
+            </div>
+            
+            <div class="curl-import-body" *ngIf="showCurlInput()">
+              <textarea 
+                placeholder="Cole aqui seu comando cURL (ex: curl -X POST https://api... -H '...')" 
+                class="prop-control curl-textarea" 
+                rows="4"
+                [(ngModel)]="curlRawInput"
+              ></textarea>
+              <button type="button" (click)="applyCurlImport()" class="btn-apply-curl">
+                Importar e Preencher ⚡
+              </button>
+            </div>
+          </div>
+
+          <!-- URL -->
+          <div class="prop-group">
+            <label for="prop-http-url">URL do Endpoint</label>
+            <input
+              type="text"
+              id="prop-http-url"
+              class="prop-control"
+              placeholder="https://api.exemplo.com/dados"
+              [ngModel]="selectedNode()?.httpUrl"
+              (ngModelChange)="updateSelectedNodeProperties({httpUrl: $event})"
+            />
+          </div>
+
+          <!-- Method -->
+          <div class="prop-group">
+            <label for="prop-http-method">Método HTTP</label>
+            <select
+              id="prop-http-method"
+              class="prop-control select-control"
+              [ngModel]="selectedNode()?.httpMethod"
+              (ngModelChange)="updateSelectedNodeProperties({httpMethod: $event})"
+            >
+              <option value="GET">GET</option>
+              <option value="POST">POST</option>
+              <option value="PUT">PUT</option>
+              <option value="DELETE">DELETE</option>
+            </select>
+          </div>
+
+          <!-- Headers Sub-CRUD -->
+          <div class="prop-group">
+            <div class="headers-title-row">
+              <label>Headers (Cabeçalhos)</label>
+              <button type="button" (click)="addHeaderToSelectedNode()" class="btn-add-header">+ Add</button>
+            </div>
+            
+            <div class="headers-list">
+              <div class="header-row-item" *ngFor="let header of selectedNode()?.httpHeaders; let i = index">
+                <input
+                  type="text"
+                  placeholder="Key"
+                  class="prop-control header-input"
+                  [ngModel]="header.key"
+                  (ngModelChange)="updateHeaderKey(i, $event)"
+                />
+                <input
+                  type="text"
+                  placeholder="Value"
+                  class="prop-control header-input"
+                  [ngModel]="header.value"
+                  (ngModelChange)="updateHeaderValue(i, $event)"
+                />
+                <button type="button" (click)="removeHeaderFromSelectedNode(i)" class="btn-remove-header" title="Remover header">
+                  ×
+                </button>
+              </div>
+              <div class="empty-headers" *ngIf="!selectedNode()?.httpHeaders || selectedNode()?.httpHeaders?.length === 0">
+                Nenhum cabeçalho configurado.
+              </div>
+            </div>
+          </div>
+
+          <!-- Body (Textarea, enabled if method is not GET) -->
+          <div class="prop-group" *ngIf="selectedNode()?.httpMethod !== 'GET'">
+            <label for="prop-http-body">Corpo da Requisição (JSON/Text)</label>
+            <textarea
+              id="prop-http-body"
+              class="prop-control body-textarea"
+              rows="5"
+              placeholder='{ "key": "value" }'
+              [ngModel]="selectedNode()?.httpBody"
+              (ngModelChange)="updateSelectedNodeProperties({httpBody: $event})"
+            ></textarea>
+          </div>
+
+          <!-- HTTP Request Live Test Panel -->
+          <div class="prop-group http-test-section">
+            <label>Testar Requisição</label>
+            <button 
+              type="button" 
+              (click)="testSelectedHttpRequest()" 
+              [disabled]="isTestingHttp()"
+              class="btn-test-http"
+            >
+              <span *ngIf="isTestingHttp()">Enviando...</span>
+              <span *ngIf="!isTestingHttp()">Testar Requisição ⚡</span>
+            </button>
+
+            <!-- Test Result Details Box -->
+            <div class="http-test-result-box" *ngIf="httpTestResult()">
+              <div class="test-result-header" [class.result-success]="httpTestResult()?.success">
+                <span class="status-badge" [class.badge-success]="httpTestResult()?.success" [class.badge-error]="!httpTestResult()?.success">
+                  {{ httpTestResult()?.status }} {{ httpTestResult()?.statusText }}
+                </span>
+                <span class="test-time">{{ httpTestResult()?.duration }}ms</span>
+              </div>
+              
+              <div class="test-result-body">
+                <!-- Request debugging toggler -->
+                <button type="button" class="btn-toggle-req-details" (click)="toggleRequestDetails()">
+                  <span>{{ showRequestDetails() ? '▼ Ocultar Envio (Request)' : '▶ Ver Envio (Request Details)' }}</span>
+                </button>
+
+                <!-- Debug request parameters box -->
+                <div class="request-details-box" *ngIf="showRequestDetails() && httpTestResult()?.request">
+                  <div class="detail-item">
+                    <strong>URL:</strong>
+                    <span>{{ httpTestResult()?.request?.url }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <strong>Método:</strong>
+                    <span class="method-tag">{{ httpTestResult()?.request?.method }}</span>
+                  </div>
+                  <div class="detail-item" *ngIf="getRequestHeadersCount() > 0">
+                    <strong>Headers Enviados:</strong>
+                    <pre class="mini-code">{{ getRequestHeadersJson() }}</pre>
+                  </div>
+                  <div class="detail-item" *ngIf="httpTestResult()?.request?.body">
+                    <strong>Corpo Enviado (Body):</strong>
+                    <pre class="mini-code">{{ httpTestResult()?.request?.body }}</pre>
+                  </div>
+                </div>
+
+                <label class="result-body-label">Corpo do Retorno:</label>
+                <pre class="result-body-content">{{ httpTestResult()?.body }}</pre>
+              </div>
+
+              <!-- CORS Warning when status is 0 -->
+              <div class="test-cors-warning" *ngIf="httpTestResult()?.status === 0">
+                ⚠️ **Nota:** Erros com status 0 geralmente ocorrem por bloqueios de CORS devido ao teste rodar direto no navegador.
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- ==================== PROPERTIES: CONDITIONAL NODE ==================== -->
+        <ng-container *ngIf="selectedNode()?.type === 'conditional'">
+          <!-- Name -->
+          <div class="prop-group">
+            <label for="prop-cond-name">Identificação do Bloco</label>
+            <input
+              type="text"
+              id="prop-cond-name"
+              class="prop-control"
+              [ngModel]="selectedNode()?.name"
+              (ngModelChange)="updateSelectedNodeProperties({name: $event})"
+            />
+          </div>
+
+          <!-- Condition Settings -->
+          <div class="prop-group">
+            <label>Condição (Se)</label>
+            
+            <div class="condition-inputs-container" style="display: flex; flex-direction: column; gap: 0.5rem; background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 0.75rem; border-radius: 8px;">
+              <!-- Variable input -->
+              <div class="form-subgroup" style="display: flex; flex-direction: column; gap: 0.25rem;">
+                <label style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Se a Variável</label>
+                <input
+                  type="text"
+                  class="prop-control"
+                  placeholder="Ex: {mensagem} ou mensagem"
+                  [ngModel]="selectedNode()?.conditionVariable"
+                  (ngModelChange)="updateSelectedNodeProperties({conditionVariable: $event})"
+                />
+              </div>
+
+              <!-- Operator selection -->
+              <div class="form-subgroup" style="display: flex; flex-direction: column; gap: 0.25rem;">
+                <label style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Critério</label>
+                <select
+                  class="prop-control select-control"
+                  [ngModel]="selectedNode()?.conditionOperator"
+                  (ngModelChange)="updateSelectedNodeProperties({conditionOperator: $event})"
+                >
+                  <option value="equals">Igual a (==)</option>
+                  <option value="not_equals">Diferente de (!=)</option>
+                  <option value="contains">Contém</option>
+                  <option value="greater_than">Maior que (&gt;)</option>
+                  <option value="less_than">Menor que (&lt;)</option>
+                  <option value="exists">Existe / Definida</option>
+                  <option value="not_exists">Não existe / Vazia</option>
+                </select>
+              </div>
+
+              <!-- Value input (hidden if exists/not_exists) -->
+              <div class="form-subgroup" style="display: flex; flex-direction: column; gap: 0.25rem;" *ngIf="selectedNode()?.conditionOperator !== 'exists' && selectedNode()?.conditionOperator !== 'not_exists'">
+                <label style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase;">Com o valor</label>
+                <input
+                  type="text"
+                  class="prop-control"
+                  placeholder="Ex: suporte ou {outra_var}"
+                  [ngModel]="selectedNode()?.conditionValue"
+                  (ngModelChange)="updateSelectedNodeProperties({conditionValue: $event})"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- True Connection selection -->
+          <div class="prop-group">
+            <label for="prop-cond-true" style="color: #22c55e;">Se Verdadeiro (Sim) ➔ Ir para</label>
+            <select
+              id="prop-cond-true"
+              class="prop-control select-control"
+              style="border-color: #22c55e;"
+              [ngModel]="selectedNode()?.trueNodeId"
+              (ngModelChange)="updateSelectedNodeProperties({trueNodeId: $event || undefined})"
+            >
+              <option [value]="undefined">-- Fim do fluxo --</option>
+              <option 
+                *ngFor="let option of getPotentialNextNodes(selectedNode()!)" 
+                [value]="option.id"
+              >
+                {{ option.name }}
+              </option>
+            </select>
+          </div>
+
+          <!-- False Connection selection -->
+          <div class="prop-group">
+            <label for="prop-cond-false" style="color: #ef4444;">Se Falso (Não) ➔ Ir para</label>
+            <select
+              id="prop-cond-false"
+              class="prop-control select-control"
+              style="border-color: #ef4444;"
+              [ngModel]="selectedNode()?.falseNodeId"
+              (ngModelChange)="updateSelectedNodeProperties({falseNodeId: $event || undefined})"
+            >
+              <option [value]="undefined">-- Fim do fluxo --</option>
+              <option 
+                *ngFor="let option of getPotentialNextNodes(selectedNode()!)" 
+                [value]="option.id"
+              >
+                {{ option.name }}
+              </option>
+            </select>
+          </div>
+        </ng-container>
+
+        <!-- ==================== PROPERTIES: TIME CHECK NODE ==================== -->
+        <ng-container *ngIf="selectedNode()?.type === 'time_check'">
+          <!-- Name -->
+          <div class="prop-group">
+            <label for="prop-time-name">Identificação do Bloco</label>
+            <input
+              type="text"
+              id="prop-time-name"
+              class="prop-control"
+              [ngModel]="selectedNode()?.name"
+              (ngModelChange)="updateSelectedNodeProperties({name: $event})"
+            />
+          </div>
+
+          <!-- Time Range Setting -->
+          <div class="prop-group">
+            <label>Intervalo de Tempo</label>
+            
+            <div class="time-range-inputs" style="display: flex; flex-direction: column; gap: 0.75rem; background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 0.75rem; border-radius: 8px;">
+              <!-- Start Time -->
+              <div>
+                <label style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 0.25rem;">Horário de Início</label>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                  <!-- Hour Selector -->
+                  <select
+                    class="prop-control select-control"
+                    style="flex: 1;"
+                    [ngModel]="selectedNode()?.timeStartHour"
+                    (ngModelChange)="updateSelectedNodeProperties({timeStartHour: +$event})"
+                  >
+                    <option *ngFor="let h of hoursList" [value]="h">
+                      {{ h | number:'2.0-0' }} h
+                    </option>
+                  </select>
+                  <span style="color: #64748b; font-weight: bold;">:</span>
+                  <!-- Minute Selector -->
+                  <select
+                    class="prop-control select-control"
+                    style="flex: 1;"
+                    [ngModel]="selectedNode()?.timeStartMinute"
+                    (ngModelChange)="updateSelectedNodeProperties({timeStartMinute: +$event})"
+                  >
+                    <option *ngFor="let m of minutesList" [value]="m">
+                      {{ m | number:'2.0-0' }} min
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- End Time -->
+              <div>
+                <label style="font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 0.25rem;">Horário de Término</label>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                  <!-- Hour Selector -->
+                  <select
+                    class="prop-control select-control"
+                    style="flex: 1;"
+                    [ngModel]="selectedNode()?.timeEndHour"
+                    (ngModelChange)="updateSelectedNodeProperties({timeEndHour: +$event})"
+                  >
+                    <option *ngFor="let h of hoursList" [value]="h">
+                      {{ h | number:'2.0-0' }} h
+                    </option>
+                  </select>
+                  <span style="color: #64748b; font-weight: bold;">:</span>
+                  <!-- Minute Selector -->
+                  <select
+                    class="prop-control select-control"
+                    style="flex: 1;"
+                    [ngModel]="selectedNode()?.timeEndMinute"
+                    (ngModelChange)="updateSelectedNodeProperties({timeEndMinute: +$event})"
+                  >
+                    <option *ngFor="let m of minutesList" [value]="m">
+                      {{ m | number:'2.0-0' }} min
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weekdays Button Group -->
+          <div class="prop-group">
+            <label>Dias da Semana</label>
+            <div class="weekdays-grid">
+              <button 
+                type="button" 
+                class="weekday-btn" 
+                [class.active]="isWeekdaySelected('1')" 
+                (click)="toggleWeekday('1')"
+              >Seg</button>
+              <button 
+                type="button" 
+                class="weekday-btn" 
+                [class.active]="isWeekdaySelected('2')" 
+                (click)="toggleWeekday('2')"
+              >Ter</button>
+              <button 
+                type="button" 
+                class="weekday-btn" 
+                [class.active]="isWeekdaySelected('3')" 
+                (click)="toggleWeekday('3')"
+              >Qua</button>
+              <button 
+                type="button" 
+                class="weekday-btn" 
+                [class.active]="isWeekdaySelected('4')" 
+                (click)="toggleWeekday('4')"
+              >Qui</button>
+              <button 
+                type="button" 
+                class="weekday-btn" 
+                [class.active]="isWeekdaySelected('5')" 
+                (click)="toggleWeekday('5')"
+              >Sex</button>
+              <button 
+                type="button" 
+                class="weekday-btn" 
+                [class.active]="isWeekdaySelected('6')" 
+                (click)="toggleWeekday('6')"
+              >Sáb</button>
+              <button 
+                type="button" 
+                class="weekday-btn" 
+                [class.active]="isWeekdaySelected('7')" 
+                (click)="toggleWeekday('7')"
+              >Dom</button>
+            </div>
+          </div>
+
+          <!-- Timezone Selection -->
+          <div class="prop-group">
+            <label for="prop-time-timezone">Fuso Horário (Timezone)</label>
+            <select
+              id="prop-time-timezone"
+              class="prop-control select-control"
+              [ngModel]="selectedNode()?.timeTimezone"
+              (ngModelChange)="updateSelectedNodeProperties({timeTimezone: $event})"
+            >
+              <option value="America/Sao_Paulo">Brasília (America/Sao_Paulo)</option>
+              <option value="America/Manaus">Manaus (America/Manaus)</option>
+              <option value="America/Noronha">Fernando de Noronha (America/Noronha)</option>
+              <option value="UTC">Coordinated Universal Time (UTC)</option>
+              <option value="America/New_York">New York (America/New_York)</option>
+              <option value="Europe/London">London (Europe/London)</option>
+            </select>
+          </div>
+
+          <!-- True Branch ➔ Ir para -->
+          <div class="prop-group">
+            <label for="prop-time-true" style="color: #22c55e;">Dentro do horário (True) ➔ Ir para</label>
+            <select
+              id="prop-time-true"
+              class="prop-control select-control"
+              style="border-color: #22c55e;"
+              [ngModel]="selectedNode()?.trueNodeId"
+              (ngModelChange)="updateSelectedNodeProperties({trueNodeId: $event || undefined})"
+            >
+              <option [value]="undefined">-- Parar fluxo --</option>
+              <option *ngFor="let potential of getPotentialNextNodes(selectedNode()!)" [value]="potential.id">
+                {{ potential.name }} ({{ potential.type }})
+              </option>
+            </select>
+          </div>
+
+          <!-- False Branch ➔ Ir para -->
+          <div class="prop-group">
+            <label for="prop-time-false" style="color: #ef4444;">Fora do horário (False) ➔ Ir para</label>
+            <select
+              id="prop-time-false"
+              class="prop-control select-control"
+              style="border-color: #ef4444;"
+              [ngModel]="selectedNode()?.falseNodeId"
+              (ngModelChange)="updateSelectedNodeProperties({falseNodeId: $event || undefined})"
+            >
+              <option [value]="undefined">-- Parar fluxo --</option>
+              <option *ngFor="let potential of getPotentialNextNodes(selectedNode()!)" [value]="potential.id">
+                {{ potential.name }} ({{ potential.type }})
+              </option>
+            </select>
+          </div>
+        </ng-container>
+
+        <!-- ==================== PROPERTIES: FINISH NODE ==================== -->
+        <ng-container *ngIf="selectedNode()?.type === 'finish'">
+          <!-- Name -->
+          <div class="prop-group">
+            <label for="prop-finish-name">Identificação do Bloco</label>
+            <input
+              type="text"
+              id="prop-finish-name"
+              class="prop-control"
+              [ngModel]="selectedNode()?.name"
+              (ngModelChange)="updateSelectedNodeProperties({name: $event})"
+            />
+          </div>
+
+          <div class="prop-group finish-node-help" style="background-color: #fef2f2; border: 1px solid #fee2e2; padding: 0.75rem; border-radius: 8px; margin-top: 0.5rem;">
+            <span class="finish-node-badge" style="background-color: #ef4444; color: #ffffff; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; padding: 0.2rem 0.5rem; border-radius: 4px; display: inline-block; margin-bottom: 0.5rem;">
+              🏁 Bloco de Encerramento
+            </span>
+            <p class="finish-node-desc" style="font-size: 0.75rem; color: #7f1d1d; line-height: 1.4; margin: 0 0 0.5rem 0;">
+              Ao atingir este bloco no fluxo de conversa, o chatbot encerrará a execução e marcará o status do atendimento como **Finalizado (finished)**.
+            </p>
+            <p class="finish-node-hint" style="font-size: 0.7rem; color: #991b1b; line-height: 1.4; margin: 0; font-style: italic;">
+              * Este bloco não possui saídas e interrompe a conversa ativamente.
+            </p>
+          </div>
+        </ng-container>
+
+        <!-- ==================== PROPERTIES: UAZAPI BUTTONS NODE ==================== -->
+        <ng-container *ngIf="selectedNode()?.type === 'uazapi_buttons'">
+          <!-- Name -->
+          <div class="prop-group">
+            <label for="prop-uazapi-name">Identificação do Bloco</label>
+            <input
+              type="text"
+              id="prop-uazapi-name"
+              class="prop-control"
+              [ngModel]="selectedNode()?.name"
+              (ngModelChange)="updateSelectedNodeProperties({name: $event})"
+            />
+          </div>
+
+          <!-- Menu Text -->
+          <div class="prop-group">
+            <label for="prop-uazapi-text">Texto Principal (Header)</label>
+            <textarea
+              id="prop-uazapi-text"
+              class="prop-control"
+              rows="4"
+              placeholder="Ex: Como podemos te ajudar hoje?"
+              [ngModel]="selectedNode()?.menuText"
+              (ngModelChange)="updateSelectedNodeProperties({menuText: $event})"
+            ></textarea>
+          </div>
+
+          <!-- Menu Footer Text -->
+          <div class="prop-group">
+            <label for="prop-uazapi-footer">Texto de Rodapé (Footer)</label>
+            <input
+              type="text"
+              id="prop-uazapi-footer"
+              class="prop-control"
+              placeholder="Ex: 📍 São Leopoldo/RS"
+              [ngModel]="selectedNode()?.menuFooterText"
+              (ngModelChange)="updateSelectedNodeProperties({menuFooterText: $event})"
+            />
+          </div>
+
+          <!-- Button 1 Configuration -->
+          <div class="prop-group" style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 0.75rem; border-radius: 8px; margin-top: 0.25rem;">
+            <span style="font-size: 0.8rem; font-weight: 800; color: #6366f1; text-transform: uppercase;">Botão 1 (Obrigatório)</span>
+            
+            <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.35rem;">
+              <input
+                type="text"
+                class="prop-control"
+                placeholder="Título do Botão (Ex: Falar com Atendente)"
+                [ngModel]="selectedNode()?.button1Label"
+                (ngModelChange)="updateSelectedNodeProperties({button1Label: $event})"
+              />
+              <input
+                type="text"
+                class="prop-control"
+                placeholder="Valor/Código Interno (Ex: falar_atendente)"
+                [ngModel]="selectedNode()?.button1Value"
+                (ngModelChange)="updateSelectedNodeProperties({button1Value: $event})"
+              />
+              <select
+                class="prop-control select-control"
+                style="border-color: #6366f1;"
+                [ngModel]="selectedNode()?.button1NodeId"
+                (ngModelChange)="updateSelectedNodeProperties({button1NodeId: $event || undefined})"
+              >
+                <option [value]="undefined">-- Nenhum (Fim do fluxo) --</option>
+                <option 
+                  *ngFor="let option of getPotentialNextNodes(selectedNode()!)" 
+                  [value]="option.id"
+                >
+                  ➔ {{ option.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Button 2 Configuration -->
+          <div class="prop-group" style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 0.75rem; border-radius: 8px; margin-top: 0.25rem;">
+            <span style="font-size: 0.8rem; font-weight: 800; color: #4f46e5; text-transform: uppercase;">Botão 2 (Opcional)</span>
+            
+            <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.35rem;">
+              <input
+                type="text"
+                class="prop-control"
+                placeholder="Título do Botão (Ex: Consultar Processo)"
+                [ngModel]="selectedNode()?.button2Label"
+                (ngModelChange)="updateSelectedNodeProperties({button2Label: $event})"
+              />
+              <input
+                type="text"
+                class="prop-control"
+                placeholder="Valor/Código Interno (Ex: ver_processo)"
+                [ngModel]="selectedNode()?.button2Value"
+                (ngModelChange)="updateSelectedNodeProperties({button2Value: $event})"
+              />
+              <select
+                class="prop-control select-control"
+                style="border-color: #4f46e5;"
+                [ngModel]="selectedNode()?.button2NodeId"
+                (ngModelChange)="updateSelectedNodeProperties({button2NodeId: $event || undefined})"
+              >
+                <option [value]="undefined">-- Nenhum (Fim do fluxo) --</option>
+                <option 
+                  *ngFor="let option of getPotentialNextNodes(selectedNode()!)" 
+                  [value]="option.id"
+                >
+                  ➔ {{ option.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Button 3 Configuration -->
+          <div class="prop-group" style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 0.75rem; border-radius: 8px; margin-top: 0.25rem;">
+            <span style="font-size: 0.8rem; font-weight: 800; color: #4338ca; text-transform: uppercase;">Botão 3 (Opcional)</span>
+            
+            <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.35rem;">
+              <input
+                type="text"
+                class="prop-control"
+                placeholder="Título do Botão (Ex: Enviar Documentos)"
+                [ngModel]="selectedNode()?.button3Label"
+                (ngModelChange)="updateSelectedNodeProperties({button3Label: $event})"
+              />
+              <input
+                type="text"
+                class="prop-control"
+                placeholder="Valor/Código Interno (Ex: enviar_docs)"
+                [ngModel]="selectedNode()?.button3Value"
+                (ngModelChange)="updateSelectedNodeProperties({button3Value: $event})"
+              />
+              <select
+                class="prop-control select-control"
+                style="border-color: #4338ca;"
+                [ngModel]="selectedNode()?.button3NodeId"
+                (ngModelChange)="updateSelectedNodeProperties({button3NodeId: $event || undefined})"
+              >
+                <option [value]="undefined">-- Nenhum (Fim do fluxo) --</option>
+                <option 
+                  *ngFor="let option of getPotentialNextNodes(selectedNode()!)" 
+                  [value]="option.id"
+                >
+                  ➔ {{ option.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Fallback Route -->
+          <div class="prop-group" style="background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 0.75rem; border-radius: 8px; margin-top: 0.25rem;">
+            <span style="font-size: 0.8rem; font-weight: 800; color: #475569; text-transform: uppercase;">⚙ Fallback (Se não for nenhuma resposta)</span>
+            <p style="font-size: 0.7rem; color: #64748b; margin: 0.15rem 0 0.4rem 0; line-height: 1.3;">
+              Caminho a seguir se a resposta do cliente não corresponder a nenhuma das opções acima.
+            </p>
+            
+            <select
+              class="prop-control select-control"
+              style="border-color: #94a3b8;"
+              [ngModel]="selectedNode()?.fallbackNodeId"
+              (ngModelChange)="updateSelectedNodeProperties({fallbackNodeId: $event || undefined})"
+            >
+              <option [value]="undefined">-- Fim do fluxo --</option>
+              <option 
+                *ngFor="let option of getPotentialNextNodes(selectedNode()!)" 
+                [value]="option.id"
+              >
+                ➔ {{ option.name }}
+              </option>
+            </select>
+          </div>
+        </ng-container>
+
+        <!-- ==================== PROPERTIES: UAZAPI LIST NODE ==================== -->
+        <ng-container *ngIf="selectedNode()?.type === 'uazapi_list'">
+          <!-- Name -->
+          <div class="prop-group">
+            <label for="prop-uazapi-list-name">Identificação do Bloco</label>
+            <input
+              type="text"
+              id="prop-uazapi-list-name"
+              class="prop-control"
+              [ngModel]="selectedNode()?.name"
+              (ngModelChange)="updateSelectedNodeProperties({name: $event})"
+            />
+          </div>
+
+          <!-- Menu Text -->
+          <div class="prop-group">
+            <label for="prop-uazapi-list-text">Texto Principal (Header)</label>
+            <textarea
+              id="prop-uazapi-list-text"
+              class="prop-control"
+              rows="4"
+              placeholder="Ex: Como podemos te ajudar hoje?"
+              [ngModel]="selectedNode()?.menuText"
+              (ngModelChange)="updateSelectedNodeProperties({menuText: $event})"
+            ></textarea>
+          </div>
+
+          <!-- Menu Footer Text -->
+          <div class="prop-group">
+            <label for="prop-uazapi-list-footer">Texto de Rodapé (Footer)</label>
+            <input
+              type="text"
+              id="prop-uazapi-list-footer"
+              class="prop-control"
+              placeholder="Ex: 📍 São Leopoldo/RS"
+              [ngModel]="selectedNode()?.menuFooterText"
+              (ngModelChange)="updateSelectedNodeProperties({menuFooterText: $event})"
+            />
+          </div>
+
+          <!-- Menu List Button Label -->
+          <div class="prop-group">
+            <label for="prop-uazapi-list-btn-text">Texto do Botão de Lista (listButton)</label>
+            <input
+              type="text"
+              id="prop-uazapi-list-btn-text"
+              class="prop-control"
+              placeholder="Ex: Selecionar serviço"
+              [ngModel]="selectedNode()?.menuButtonText"
+              (ngModelChange)="updateSelectedNodeProperties({menuButtonText: $event})"
+            />
+          </div>
+
+          <!-- Choice 1 Configuration -->
+          <div class="prop-group" style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 0.75rem; border-radius: 8px; margin-top: 0.25rem;">
+            <span style="font-size: 0.8rem; font-weight: 800; color: #6366f1; text-transform: uppercase;">Opção 1 (Obrigatório)</span>
+            <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.35rem;">
+              <input
+                type="text"
+                class="prop-control"
+                placeholder="Título do Item (Ex: Acompanhar meu processo)"
+                [ngModel]="selectedNode()?.button1Label"
+                (ngModelChange)="updateSelectedNodeProperties({button1Label: $event})"
+              />
+              <input
+                type="text"
+                class="prop-control"
+                placeholder="Valor/Código Interno (Ex: info_processo)"
+                [ngModel]="selectedNode()?.button1Value"
+                (ngModelChange)="updateSelectedNodeProperties({button1Value: $event})"
+              />
+              <select
+                class="prop-control select-control"
+                style="border-color: #6366f1;"
+                [ngModel]="selectedNode()?.button1NodeId"
+                (ngModelChange)="updateSelectedNodeProperties({button1NodeId: $event || undefined})"
+              >
+                <option [value]="undefined">-- Nenhum (Fim do fluxo) --</option>
+                <option *ngFor="let option of getPotentialNextNodes(selectedNode()!)" [value]="option.id">➔ {{ option.name }}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Choice 2 Configuration -->
+          <div class="prop-group" style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 0.75rem; border-radius: 8px; margin-top: 0.25rem;">
+            <span style="font-size: 0.8rem; font-weight: 800; color: #4f46e5; text-transform: uppercase;">Opção 2 (Opcional)</span>
+            <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.35rem;">
+              <input
+                type="text"
+                class="prop-control"
+                placeholder="Título do Item"
+                [ngModel]="selectedNode()?.button2Label"
+                (ngModelChange)="updateSelectedNodeProperties({button2Label: $event})"
+              />
+              <input
+                type="text"
+                class="prop-control"
+                placeholder="Valor/Código Interno"
+                [ngModel]="selectedNode()?.button2Value"
+                (ngModelChange)="updateSelectedNodeProperties({button2Value: $event})"
+              />
+              <select
+                class="prop-control select-control"
+                style="border-color: #4f46e5;"
+                [ngModel]="selectedNode()?.button2NodeId"
+                (ngModelChange)="updateSelectedNodeProperties({button2NodeId: $event || undefined})"
+              >
+                <option [value]="undefined">-- Nenhum (Fim do fluxo) --</option>
+                <option *ngFor="let option of getPotentialNextNodes(selectedNode()!)" [value]="option.id">➔ {{ option.name }}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Choice 3 Configuration -->
+          <div class="prop-group" style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 0.75rem; border-radius: 8px; margin-top: 0.25rem;">
+            <span style="font-size: 0.8rem; font-weight: 800; color: #4338ca; text-transform: uppercase;">Opção 3 (Opcional)</span>
+            <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.35rem;">
+              <input
+                type="text"
+                class="prop-control"
+                placeholder="Título do Item"
+                [ngModel]="selectedNode()?.button3Label"
+                (ngModelChange)="updateSelectedNodeProperties({button3Label: $event})"
+              />
+              <input
+                type="text"
+                class="prop-control"
+                placeholder="Valor/Código Interno"
+                [ngModel]="selectedNode()?.button3Value"
+                (ngModelChange)="updateSelectedNodeProperties({button3Value: $event})"
+              />
+              <select
+                class="prop-control select-control"
+                style="border-color: #4338ca;"
+                [ngModel]="selectedNode()?.button3NodeId"
+                (ngModelChange)="updateSelectedNodeProperties({button3NodeId: $event || undefined})"
+              >
+                <option [value]="undefined">-- Nenhum (Fim do fluxo) --</option>
+                <option *ngFor="let option of getPotentialNextNodes(selectedNode()!)" [value]="option.id">➔ {{ option.name }}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Choice 4 Configuration -->
+          <div class="prop-group" style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 0.75rem; border-radius: 8px; margin-top: 0.25rem;">
+            <span style="font-size: 0.8rem; font-weight: 800; color: #3b82f6; text-transform: uppercase;">Opção 4 (Opcional)</span>
+            <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.35rem;">
+              <input
+                type="text"
+                class="prop-control"
+                placeholder="Título do Item"
+                [ngModel]="selectedNode()?.button4Label"
+                (ngModelChange)="updateSelectedNodeProperties({button4Label: $event})"
+              />
+              <input
+                type="text"
+                class="prop-control"
+                placeholder="Valor/Código Interno"
+                [ngModel]="selectedNode()?.button4Value"
+                (ngModelChange)="updateSelectedNodeProperties({button4Value: $event})"
+              />
+              <select
+                class="prop-control select-control"
+                style="border-color: #3b82f6;"
+                [ngModel]="selectedNode()?.button4NodeId"
+                (ngModelChange)="updateSelectedNodeProperties({button4NodeId: $event || undefined})"
+              >
+                <option [value]="undefined">-- Nenhum (Fim do fluxo) --</option>
+                <option *ngFor="let option of getPotentialNextNodes(selectedNode()!)" [value]="option.id">➔ {{ option.name }}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Choice 5 Configuration -->
+          <div class="prop-group" style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 0.75rem; border-radius: 8px; margin-top: 0.25rem;">
+            <span style="font-size: 0.8rem; font-weight: 800; color: #06b6d4; text-transform: uppercase;">Opção 5 (Opcional)</span>
+            <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.35rem;">
+              <input
+                type="text"
+                class="prop-control"
+                placeholder="Título do Item"
+                [ngModel]="selectedNode()?.button5Label"
+                (ngModelChange)="updateSelectedNodeProperties({button5Label: $event})"
+              />
+              <input
+                type="text"
+                class="prop-control"
+                placeholder="Valor/Código Interno"
+                [ngModel]="selectedNode()?.button5Value"
+                (ngModelChange)="updateSelectedNodeProperties({button5Value: $event})"
+              />
+              <select
+                class="prop-control select-control"
+                style="border-color: #06b6d4;"
+                [ngModel]="selectedNode()?.button5NodeId"
+                (ngModelChange)="updateSelectedNodeProperties({button5NodeId: $event || undefined})"
+              >
+                <option [value]="undefined">-- Nenhum (Fim do fluxo) --</option>
+                <option *ngFor="let option of getPotentialNextNodes(selectedNode()!)" [value]="option.id">➔ {{ option.name }}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Choice 6 Configuration -->
+          <div class="prop-group" style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 0.75rem; border-radius: 8px; margin-top: 0.25rem;">
+            <span style="font-size: 0.8rem; font-weight: 800; color: #0d9488; text-transform: uppercase;">Opção 6 (Opcional)</span>
+            <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.35rem;">
+              <input
+                type="text"
+                class="prop-control"
+                placeholder="Título do Item"
+                [ngModel]="selectedNode()?.button6Label"
+                (ngModelChange)="updateSelectedNodeProperties({button6Label: $event})"
+              />
+              <input
+                type="text"
+                class="prop-control"
+                placeholder="Valor/Código Interno"
+                [ngModel]="selectedNode()?.button6Value"
+                (ngModelChange)="updateSelectedNodeProperties({button6Value: $event})"
+              />
+              <select
+                class="prop-control select-control"
+                style="border-color: #0d9488;"
+                [ngModel]="selectedNode()?.button6NodeId"
+                (ngModelChange)="updateSelectedNodeProperties({button6NodeId: $event || undefined})"
+              >
+                <option [value]="undefined">-- Nenhum (Fim do fluxo) --</option>
+                <option *ngFor="let option of getPotentialNextNodes(selectedNode()!)" [value]="option.id">➔ {{ option.name }}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Fallback Route -->
+          <div class="prop-group" style="background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 0.75rem; border-radius: 8px; margin-top: 0.25rem;">
+            <span style="font-size: 0.8rem; font-weight: 800; color: #475569; text-transform: uppercase;">⚙ Fallback (Se não for nenhuma resposta)</span>
+            <p style="font-size: 0.7rem; color: #64748b; margin: 0.15rem 0 0.4rem 0; line-height: 1.3;">
+              Caminho a seguir se a resposta do cliente não corresponder a nenhuma das opções acima.
+            </p>
+            
+            <select
+              class="prop-control select-control"
+              style="border-color: #94a3b8;"
+              [ngModel]="selectedNode()?.fallbackNodeId"
+              (ngModelChange)="updateSelectedNodeProperties({fallbackNodeId: $event || undefined})"
+            >
+              <option [value]="undefined">-- Fim do fluxo --</option>
+              <option *ngFor="let option of getPotentialNextNodes(selectedNode()!)" [value]="option.id">➔ {{ option.name }}</option>
+            </select>
+          </div>
+        </ng-container>
+
+        <!-- ==================== PROPERTIES: CHATWOOT LABEL ==================== -->
+        <ng-container *ngIf="selectedNode()?.type === 'chatwoot_label'">
+          <!-- Name -->
+          <div class="prop-group">
+            <label for="prop-name">Identificação do Bloco</label>
+            <input
+              type="text"
+              id="prop-name"
+              class="prop-control"
+              [ngModel]="selectedNode()?.name"
+              (ngModelChange)="updateSelectedNodeProperties({name: $event})"
+            />
+          </div>
+
+          <!-- Action -->
+          <div class="prop-group">
+            <label for="prop-label-action">Ação da Etiqueta</label>
+            <select
+              id="prop-label-action"
+              class="prop-control select-control"
+              [ngModel]="selectedNode()?.chatwootLabelAction || 'add'"
+              (ngModelChange)="updateSelectedNodeProperties({chatwootLabelAction: $event})"
+            >
+              <option value="add">➕ Adicionar etiqueta</option>
+              <option value="remove">➖ Remover etiqueta</option>
+              <option value="clear">🧹 Limpar todas as etiquetas da conversa</option>
+            </select>
+          </div>
+
+          <!-- Label Name selection (only shown if action is 'add' or 'remove') -->
+          <div class="prop-group" *ngIf="(selectedNode()?.chatwootLabelAction || 'add') !== 'clear'">
+            <label for="prop-label-name">Selecionar Etiqueta (Chatwoot)</label>
+            
+            <select
+              *ngIf="chatwootLabels().length > 0; else manualLabelInput"
+              id="prop-label-name"
+              class="prop-control select-control"
+              [ngModel]="selectedNode()?.chatwootLabelName"
+              (ngModelChange)="updateSelectedNodeProperties({chatwootLabelName: $event})"
+            >
+              <option value="">-- Selecione uma etiqueta --</option>
+              <option *ngFor="let label of chatwootLabels()" [value]="label">{{ label }}</option>
+            </select>
+
+            <ng-template #manualLabelInput>
+              <input
+                type="text"
+                id="prop-label-name"
+                class="prop-control"
+                placeholder="Ex: suporte, faturamento, lead"
+                [ngModel]="selectedNode()?.chatwootLabelName"
+                (ngModelChange)="updateSelectedNodeProperties({chatwootLabelName: $event})"
+              />
+              <p class="prop-hint" style="font-size: 0.725rem; color: #64748b; margin-top: 0.25rem; line-height: 1.3;">
+                Nenhuma etiqueta carregada. Digite o nome da etiqueta manualmente (as credenciais do Chatwoot no projeto devem estar configuradas para listar automaticamente).
+              </p>
+            </ng-template>
+
+            <div *ngIf="isLoadingLabels()" class="labels-loading-indicator" style="font-size: 0.75rem; color: #0284c7; margin-top: 0.25rem;">
+              <span>⏳ Carregando etiquetas da API do Chatwoot...</span>
+            </div>
+
+            <button 
+              *ngIf="chatwootConfig()"
+              type="button" 
+              class="btn-refresh-labels" 
+              (click)="fetchChatwootLabels()"
+              style="margin-top: 0.5rem; font-size: 0.75rem; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 0.35rem 0.65rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 0.25rem;"
+            >
+              🔄 Atualizar lista
+            </button>
+          </div>
+        </ng-container>
+
+        <!-- ==================== PROPERTIES: CHATWOOT AGENT ==================== -->
+        <ng-container *ngIf="selectedNode()?.type === 'chatwoot_agent'">
+          <!-- Name -->
+          <div class="prop-group">
+            <label for="prop-name">Identificação do Bloco</label>
+            <input
+              type="text"
+              id="prop-name"
+              class="prop-control"
+              [ngModel]="selectedNode()?.name"
+              (ngModelChange)="updateSelectedNodeProperties({name: $event})"
+            />
+          </div>
+
+          <!-- Action -->
+          <div class="prop-group">
+            <label for="prop-agent-action">Ação do Agente</label>
+            <select
+              id="prop-agent-action"
+              class="prop-control select-control"
+              [ngModel]="selectedNode()?.chatwootAgentAction || 'assign'"
+              (ngModelChange)="updateSelectedNodeProperties({chatwootAgentAction: $event})"
+            >
+              <option value="assign">👤 Atribuir agente à conversa</option>
+              <option value="unassign">❌ Remover atribuição de agente</option>
+            </select>
+          </div>
+
+          <!-- Agent selection (only shown if action is 'assign') -->
+          <div class="prop-group" *ngIf="(selectedNode()?.chatwootAgentAction || 'assign') !== 'unassign'">
+            <label for="prop-agent-select">Selecionar Agente (Chatwoot)</label>
+            
+            <select
+              *ngIf="chatwootAgents().length > 0; else manualAgentInput"
+              id="prop-agent-select"
+              class="prop-control select-control"
+              [ngModel]="selectedNode()?.chatwootAgentId"
+              (ngModelChange)="onAgentSelect($event)"
+            >
+              <option value="">-- Selecione um agente --</option>
+              <option *ngFor="let agent of chatwootAgents()" [value]="agent.id">
+                {{ agent.name || agent.available_name }} ({{ agent.email }})
+              </option>
+            </select>
+
+            <ng-template #manualAgentInput>
+              <input
+                type="text"
+                id="prop-agent-select"
+                class="prop-control"
+                placeholder="ID do Agente (numérico)"
+                [ngModel]="selectedNode()?.chatwootAgentId"
+                (ngModelChange)="updateSelectedNodeProperties({chatwootAgentId: $event})"
+              />
+              <p class="prop-hint" style="font-size: 0.725rem; color: #64748b; margin-top: 0.25rem; line-height: 1.3;">
+                Nenhum agente carregado. Digite o ID do agente manualmente (as credenciais do Chatwoot no projeto devem estar configuradas para listar automaticamente).
+              </p>
+            </ng-template>
+
+            <div *ngIf="isLoadingAgents()" class="labels-loading-indicator" style="font-size: 0.75rem; color: #0284c7; margin-top: 0.25rem;">
+              <span>⏳ Carregando agentes da API do Chatwoot...</span>
+            </div>
+
+            <button 
+              *ngIf="chatwootConfig()"
+              type="button" 
+              class="btn-refresh-labels" 
+              (click)="fetchChatwootAgents()"
+              style="margin-top: 0.5rem; font-size: 0.75rem; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 0.35rem 0.65rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 0.25rem;"
+            >
+              🔄 Atualizar lista de agentes
+            </button>
+          </div>
+        </ng-container>
+
+        <!-- ==================== PROPERTIES: CHATWOOT TEAM ==================== -->
+        <ng-container *ngIf="selectedNode()?.type === 'chatwoot_team'">
+          <!-- Name -->
+          <div class="prop-group">
+            <label for="prop-name">Identificação do Bloco</label>
+            <input
+              type="text"
+              id="prop-name"
+              class="prop-control"
+              [ngModel]="selectedNode()?.name"
+              (ngModelChange)="updateSelectedNodeProperties({name: $event})"
+            />
+          </div>
+
+          <!-- Action -->
+          <div class="prop-group">
+            <label for="prop-team-action">Ação da Equipe</label>
+            <select
+              id="prop-team-action"
+              class="prop-control select-control"
+              [ngModel]="selectedNode()?.chatwootTeamAction || 'assign'"
+              (ngModelChange)="updateSelectedNodeProperties({chatwootTeamAction: $event})"
+            >
+              <option value="assign">👥 Atribuir equipe à conversa</option>
+              <option value="unassign">❌ Remover atribuição de equipe</option>
+            </select>
+          </div>
+
+          <!-- Team selection (only shown if action is 'assign') -->
+          <div class="prop-group" *ngIf="(selectedNode()?.chatwootTeamAction || 'assign') !== 'unassign'">
+            <label for="prop-team-select">Selecionar Equipe (Chatwoot)</label>
+            
+            <select
+              *ngIf="chatwootTeams().length > 0; else manualTeamInput"
+              id="prop-team-select"
+              class="prop-control select-control"
+              [ngModel]="selectedNode()?.chatwootTeamId"
+              (ngModelChange)="onTeamSelect($event)"
+            >
+              <option value="">-- Selecione uma equipe --</option>
+              <option *ngFor="let team of chatwootTeams()" [value]="team.id">
+                {{ team.name }}
+              </option>
+            </select>
+
+            <ng-template #manualTeamInput>
+              <input
+                type="text"
+                id="prop-team-select"
+                class="prop-control"
+                placeholder="ID da Equipe (numérico)"
+                [ngModel]="selectedNode()?.chatwootTeamId"
+                (ngModelChange)="updateSelectedNodeProperties({chatwootTeamId: $event})"
+              />
+              <p class="prop-hint" style="font-size: 0.725rem; color: #64748b; margin-top: 0.25rem; line-height: 1.3;">
+                Nenhuma equipe carregada. Digite o ID da equipe manualmente (as credenciais do Chatwoot no projeto devem estar configuradas para listar automaticamente).
+              </p>
+            </ng-template>
+
+            <div *ngIf="isLoadingTeams()" class="labels-loading-indicator" style="font-size: 0.75rem; color: #0284c7; margin-top: 0.25rem;">
+              <span>⏳ Carregando equipes da API do Chatwoot...</span>
+            </div>
+
+            <button 
+              *ngIf="chatwootConfig()"
+              type="button" 
+              class="btn-refresh-labels" 
+              (click)="fetchChatwootTeams()"
+              style="margin-top: 0.5rem; font-size: 0.75rem; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 0.35rem 0.65rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 0.25rem;"
+            >
+              🔄 Atualizar lista de equipes
+            </button>
+          </div>
+        </ng-container>
+
+        <!-- ==================== COMMON PROPERTIES ==================== -->
+        <!-- Next Connection -->
+        <div class="prop-group" *ngIf="selectedNode()?.type !== 'conditional' && selectedNode()?.type !== 'uazapi_buttons' && selectedNode()?.type !== 'uazapi_list'">
+          <label for="prop-next">Próximo Passo (Conexão)</label>
+          <select
+            id="prop-next"
+            class="prop-control select-control"
+            [ngModel]="selectedNode()?.nextNodeId"
+            (ngModelChange)="updateSelectedNodeProperties({nextNodeId: $event || undefined})"
+          >
+            <option [value]="undefined">-- Nenhum (Fim do fluxo) --</option>
+            <option 
+              *ngFor="let option of getPotentialNextNodes(selectedNode()!)" 
+              [value]="option.id"
+            >
+              {{ option.name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Dynamic Variables Helper Drawer -->
+        <div class="prop-variables-helper" *ngIf="variables().length > 0">
+          <span class="helper-title">Variáveis Globais Disponíveis</span>
+          <span class="helper-subtitle">Digite no formato abaixo para injetar o valor na URL, Headers ou Body:</span>
+          <div class="variables-tag-list">
+            <code class="var-tag-code" *ngFor="let v of variables()">
+              {{ '{' }}{{ v.name }}{{ '}' }}
+            </code>
+          </div>
+        </div>
+
+        <!-- Danger Action: Delete component -->
+        <div class="prop-danger-zone" *ngIf="selectedNode()?.type !== 'start'">
+          <button (click)="deleteSelectedNode()" class="btn-delete-component">
+            Excluir Componente
+          </button>
+        </div>
+
+      </div>
+
+      <div class="properties-empty-state" *ngIf="!selectedNode()">
+        <p>Selecione um componente no canvas para editar suas propriedades.</p>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Floating copy notification -->
+  <div class="toast-notification" *ngIf="copyIndicator()">
+    Copiado: <strong>{{ copyIndicator() }}</strong>!
+  </div>
+
+  <!-- Premium Bot Activation Feedback Modal -->
+  <div class="bot-status-modal-overlay" *ngIf="showBotActiveModal()">
+    <div class="bot-status-modal-card" [class.success-card]="botActiveModalState() === 'success'">
+      
+      <!-- Spinner for loading state -->
+      <div class="modal-spinner" *ngIf="botActiveModalState() === 'loading'">
+        <div class="double-bounce1"></div>
+        <div class="double-bounce2"></div>
+      </div>
+
+      <!-- Success Checkmark for success state -->
+      <div class="modal-success-icon animate-pop" *ngIf="botActiveModalState() === 'success'">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="checkmark-svg">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+        </svg>
+      </div>
+
+      <!-- Descriptive Text -->
+      <span class="modal-status-text">{{ botActiveModalText() }}</span>
+    </div>
+  </div>
+</div>
