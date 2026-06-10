@@ -7,9 +7,9 @@ services:
     container_name: amchat-flowbuilder-backend
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3001:3001"
     environment:
-      - PORT=3000
+      - PORT=3001
       - NODE_ENV=production
     volumes:
       # Mount the firebase credentials dynamically (recommended for security)
