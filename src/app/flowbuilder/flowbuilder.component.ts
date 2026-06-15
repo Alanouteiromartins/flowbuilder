@@ -119,13 +119,17 @@ export class FlowbuilderComponent implements OnInit, OnDestroy {
   // Currently selected node for properties panel
   selectedNode = signal<FlowNode | null>(null);
 
+  // Zoom and Pan states
+  zoomLevel = signal(1);
+  panOffset = { x: 0, y: 0 };
+
   // Dragging states
   activeDragNodeId = signal<string | null>(null);
   dragOffset = { x: 0, y: 0 };
 
   // Panning states
   isPanning = signal(false);
-  private panStart = { x: 0, y: 0, scrollLeft: 0, scrollTop: 0 };
+  private panStart = { x: 0, y: 0, offsetX: 0, offsetY: 0 };
 
   // Real-time Firestore subscription unsubscribers
   private flowSubscription?: () => void;
@@ -878,6 +882,26 @@ export class FlowbuilderComponent implements OnInit, OnDestroy {
     this.selectNode(newNode);
   }
 
+  // Add a new "Gerenciar Status Chatwoot" component to Firestore
+  addChatwootStatusComponent() {
+    const currentNodes = this.nodes();
+    const count = currentNodes.length + 1;
+
+    const newNode: FlowNode = {
+      id: 'node-' + Date.now(),
+      type: 'chatwoot_status',
+      name: `Gerenciar Status ${count}`,
+      x: 100 + (Math.random() * 50),
+      y: 100 + (Math.random() * 50),
+      chatwootStatusAction: 'open'
+    };
+
+    const updated = [...currentNodes, newNode];
+    this.nodes.set(updated);
+    this.saveNodes(updated);
+    this.selectNode(newNode);
+  }
+
   // Select node to configure in the properties panel
   selectNode(node: FlowNode | null) {
     this.selectedNode.set(node);
@@ -1058,9 +1082,10 @@ export class FlowbuilderComponent implements OnInit, OnDestroy {
     event.preventDefault(); // Prevents browser text drag-and-drop ghost image
     this.activeDragNodeId.set(node.id);
     
+    const zoom = this.zoomLevel();
     this.dragOffset = {
-      x: event.clientX - node.x,
-      y: event.clientY - node.y
+      x: (event.clientX / zoom) - node.x,
+      y: (event.clientY / zoom) - node.y
     };
     
     this.selectNode(node);
@@ -1072,23 +1097,21 @@ export class FlowbuilderComponent implements OnInit, OnDestroy {
     if (event.button !== 0) return;
     
     event.preventDefault(); // Prevents selection highlighting during panning
-    const canvas = event.currentTarget as HTMLElement;
-    if (!canvas) return;
-
     this.isPanning.set(true);
     this.panStart = {
       x: event.clientX,
       y: event.clientY,
-      scrollLeft: canvas.scrollLeft,
-      scrollTop: canvas.scrollTop
+      offsetX: this.panOffset.x,
+      offsetY: this.panOffset.y
     };
   }
 
   onCanvasMouseMove(event: MouseEvent) {
     const dragId = this.activeDragNodeId();
     if (dragId) {
-      const newX = Math.max(10, Math.min(2000, event.clientX - this.dragOffset.x));
-      const newY = Math.max(10, Math.min(2000, event.clientY - this.dragOffset.y));
+      const zoom = this.zoomLevel();
+      const newX = (event.clientX / zoom) - this.dragOffset.x;
+      const newY = (event.clientY / zoom) - this.dragOffset.y;
 
       const updated = this.nodes().map(n => {
         if (n.id === dragId) {
@@ -1098,14 +1121,13 @@ export class FlowbuilderComponent implements OnInit, OnDestroy {
       });
       this.nodes.set(updated);
     } else if (this.isPanning()) {
-      const canvas = event.currentTarget as HTMLElement;
-      if (!canvas) return;
-
       const dx = event.clientX - this.panStart.x;
       const dy = event.clientY - this.panStart.y;
 
-      canvas.scrollLeft = this.panStart.scrollLeft - dx;
-      canvas.scrollTop = this.panStart.scrollTop - dy;
+      this.panOffset = {
+        x: this.panStart.offsetX + dx,
+        y: this.panStart.offsetY + dy
+      };
     }
   }
 
@@ -1119,6 +1141,23 @@ export class FlowbuilderComponent implements OnInit, OnDestroy {
       this.isPanning.set(false);
     }
   }
+
+  onCanvasWheel(event: WheelEvent) {
+    if (event.ctrlKey || event.metaKey) {
+      event.preventDefault();
+      const zoomDelta = event.deltaY > 0 ? -0.1 : 0.1;
+      this.changeZoom(zoomDelta);
+    }
+  }
+
+  changeZoom(delta: number) {
+    const newZoom = Math.max(0.1, Math.min(3, this.zoomLevel() + delta));
+    this.zoomLevel.set(newZoom);
+  }
+
+  zoomIn() { this.changeZoom(0.1); }
+  zoomOut() { this.changeZoom(-0.1); }
+  resetZoom() { this.zoomLevel.set(1); this.panOffset = { x: 0, y: 0 }; }
 
   // Helper to filter out self from "next node" selection options
   getPotentialNextNodes(node: FlowNode): FlowNode[] {

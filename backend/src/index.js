@@ -724,6 +724,13 @@ app.post('/chatwootWebhook', async (req, res) => {
         } catch (err) {
           console.error(`[Webhook] Erro no nó de equipe Chatwoot (${node.name}):`, err.message);
         }
+      } else if (node.type === 'chatwoot_status') {
+        try {
+          const status = node.chatwootStatusAction || 'open';
+          await updateChatwootConversationStatus(chatwootConfig, conversationId, status);
+        } catch (err) {
+          console.error(`[Webhook] Erro no nó de status Chatwoot (${node.name}):`, err.message);
+        }
       } else if (node.type === 'http_request') {
         try {
           const resolvedNode = {
@@ -1335,6 +1342,34 @@ async function executeHttpRequest(node) {
 
   const response = await fetch(url, options);
   console.log(`HTTP Request node (${node.name}) executado. Status: ${response.status}`);
+}
+
+/**
+ * Updates the status of a Chatwoot conversation
+ */
+async function updateChatwootConversationStatus(config, conversationId, status) {
+  let rawUrl = config.url.trim();
+  if (!rawUrl.startsWith('http://') && !rawUrl.startsWith('https://')) {
+    rawUrl = 'https://' + rawUrl;
+  }
+  const cleanUrl = rawUrl.endsWith('/') ? rawUrl.slice(0, -1) : rawUrl;
+  
+  const endpoint = `${cleanUrl}/api/v1/accounts/${config.accountId}/conversations/${conversationId}/toggle_status`;
+
+  const payload = { status: status };
+
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'api_access_token': config.token
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    throw new Error(`Chatwoot API error (Toggle Status): ${response.status} ${response.statusText}`);
+  }
 }
 
 /**

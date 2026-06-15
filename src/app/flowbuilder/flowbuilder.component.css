@@ -409,13 +409,79 @@
 .drawing-canvas {
   flex: 1;
   background-color: #f8fafc; /* Minimalist off-white background */
-  background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px); /* Simple clean dotted pattern grid */
-  background-size: 20px 20px;
   position: relative;
-  overflow: auto;
+  overflow: hidden;
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
+}
+
+.canvas-surface {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 10000px;
+  height: 10000px;
+  transform-origin: 0 0;
+  background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px);
+  background-size: 20px 20px;
+}
+
+.canvas-zoom-controls {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 1000;
+  border: 1px solid #e2e8f0;
+}
+
+.zoom-btn {
+  background: #f1f5f9;
+  border: none;
+  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.zoom-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.zoom-level {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+  min-width: 44px;
+  text-align: center;
+}
+
+.zoom-btn-reset {
+  background: none;
+  border: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.zoom-btn-reset:hover {
+  color: #0f172a;
 }
 
 .drawing-canvas:active {
@@ -427,8 +493,8 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 2500px;
-  height: 2500px;
+  width: 100%;
+  height: 100%;
   pointer-events: none; /* Allows click events to pass through SVG layer */
   z-index: 1;
 }

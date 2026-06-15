@@ -302,6 +302,17 @@
                 <span class="component-label">Gerenciar Equipe</span>
               </div>
             </button>
+
+            <button (click)="addChatwootStatusComponent()" class="component-drag-btn component-label-btn">
+              <span class="component-icon">
+                <svg class="component-icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+              </span>
+              <div class="component-info">
+                <span class="component-label">Gerenciar Status</span>
+              </div>
+            </button>
           </ng-container>
 
           <!-- Placeholder when no integrations connected -->
@@ -331,8 +342,19 @@
       (mousemove)="onCanvasMouseMove($event)"
       (mouseup)="onCanvasMouseUp()"
       (mouseleave)="onCanvasMouseUp()"
+      (wheel)="onCanvasWheel($event)"
       (click)="selectNode(null)"
     >
+      <!-- Zoom Controls -->
+      <div class="canvas-zoom-controls" (mousedown)="$event.stopPropagation()">
+        <button (click)="zoomOut()" class="zoom-btn" title="Menos Zoom">-</button>
+        <span class="zoom-level">{{ (zoomLevel() * 100) | number:'1.0-0' }}%</span>
+        <button (click)="zoomIn()" class="zoom-btn" title="Mais Zoom">+</button>
+        <button (click)="resetZoom()" class="zoom-btn-reset" title="Resetar Visualização">Reset</button>
+      </div>
+
+      <!-- Canvas Surface Container for Panning/Zooming -->
+      <div class="canvas-surface" [style.transform]="'translate(' + panOffset.x + 'px, ' + panOffset.y + 'px) scale(' + zoomLevel() + ')'">
       <!-- Connections SVG Layer -->
       <svg class="connections-layer">
         <defs>
@@ -496,6 +518,13 @@
             </ng-container>
           </div>
 
+          <!-- Chatwoot Status preview -->
+          <div class="node-preview-label" *ngIf="node.type === 'chatwoot_status'">
+            <span class="uazapi-choice-badge" *ngIf="node.chatwootStatusAction" style="background: rgba(56, 189, 248, 0.15); color: #0284c7; border-color: rgba(56, 189, 248, 0.3); font-size: 0.75rem; padding: 0.15rem 0.4rem; border-radius: 4px; display: inline-block; white-space: nowrap;">
+              🔄 Status: {{ node.chatwootStatusAction === 'open' ? 'Aberto' : node.chatwootStatusAction === 'resolved' ? 'Resolvido' : node.chatwootStatusAction === 'pending' ? 'Pendente' : node.chatwootStatusAction === 'snoozed' ? 'Adiado' : node.chatwootStatusAction }}
+            </span>
+          </div>
+
           <!-- Question Node preview -->
           <div class="node-preview-question" *ngIf="node.type === 'question'">
             <p class="node-preview-text" *ngIf="node.questionText" style="margin-bottom: 0.25rem;">
@@ -571,6 +600,7 @@
           </div>
         </div>
       </div>
+      </div> <!-- End of canvas-surface -->
 
       <!-- Instruction overlay when canvas is empty -->
       <div class="canvas-empty-overlay" *ngIf="nodes().length === 0">
@@ -1868,6 +1898,37 @@
             >
               🔄 Atualizar lista de equipes
             </button>
+          </div>
+        </ng-container>
+
+        <!-- ==================== PROPERTIES: CHATWOOT STATUS ==================== -->
+        <ng-container *ngIf="selectedNode()?.type === 'chatwoot_status'">
+          <!-- Name -->
+          <div class="prop-group">
+            <label for="prop-name">Identificação do Bloco</label>
+            <input
+              type="text"
+              id="prop-name"
+              class="prop-control"
+              [ngModel]="selectedNode()?.name"
+              (ngModelChange)="updateSelectedNodeProperties({name: $event})"
+            />
+          </div>
+
+          <!-- Action -->
+          <div class="prop-group">
+            <label for="prop-status-action">Alterar Status Para</label>
+            <select
+              id="prop-status-action"
+              class="prop-control select-control"
+              [ngModel]="selectedNode()?.chatwootStatusAction || 'open'"
+              (ngModelChange)="updateSelectedNodeProperties({chatwootStatusAction: $event})"
+            >
+              <option value="open">🟢 Aberto (Open)</option>
+              <option value="resolved">✅ Resolvido (Resolved)</option>
+              <option value="pending">⏳ Pendente (Pending)</option>
+              <option value="snoozed">💤 Adiado (Snoozed)</option>
+            </select>
           </div>
         </ng-container>
 

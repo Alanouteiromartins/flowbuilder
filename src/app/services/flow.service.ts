@@ -17,7 +17,7 @@ import { ProjectService } from './project.service';
 
 export interface FlowNode {
   id: string;
-  type: 'start' | 'message' | 'http_request' | 'conditional' | 'uazapi_buttons' | 'uazapi_list' | 'uazapi_send_text' | 'question' | 'chatwoot_label' | 'chatwoot_agent' | 'chatwoot_team' | 'time_check' | 'finish';
+  type: 'start' | 'message' | 'http_request' | 'conditional' | 'uazapi_buttons' | 'uazapi_list' | 'uazapi_send_text' | 'question' | 'chatwoot_label' | 'chatwoot_agent' | 'chatwoot_team' | 'chatwoot_status' | 'time_check' | 'finish';
   name: string;
   x: number;
   y: number;
@@ -36,6 +36,9 @@ export interface FlowNode {
   chatwootTeamId?: string;
   chatwootTeamName?: string;
   chatwootTeamAction?: 'assign' | 'unassign';
+
+  // Chatwoot Status Node properties
+  chatwootStatusAction?: 'open' | 'resolved' | 'pending' | 'snoozed';
   
   // Question Node properties
   questionText?: string;
