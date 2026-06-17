@@ -30,6 +30,20 @@
         </button>
       </div>
 
+      <!-- Bot Label Toggle Switch (Only visible if Chatwoot is connected) -->
+      <div class="bot-toggle-container" *ngIf="chatwootConfig() !== null">
+        <span class="toggle-label" title="Adiciona automaticamente a etiqueta 'bot' nas conversas do Chatwoot">Etiqueta Bot</span>
+        <button 
+          type="button" 
+          class="switch-btn" 
+          [class.active]="flowUseBotLabel()"
+          (click)="toggleFlowUseBotLabel()"
+          [title]="flowUseBotLabel() ? 'Desativar Etiqueta' : 'Ativar Etiqueta'"
+        >
+          <span class="switch-handle"></span>
+        </button>
+      </div>
+
       <span class="builder-tag">Editor de Fluxo</span>
       
       <!-- Variables Trigger Button -->

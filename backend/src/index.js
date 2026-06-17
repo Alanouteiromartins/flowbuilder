@@ -390,7 +390,7 @@ app.post('/chatwootWebhook', async (req, res) => {
     return res.status(400).send('Missing projectId in query parameters');
   }
 
-  if (event !== 'message_created') {
+  if (event !== 'message_created' && event !== 'conversation_updated') {
     return res.status(200).send('Event ignored');
   }
 
@@ -429,9 +429,44 @@ app.post('/chatwootWebhook', async (req, res) => {
       return res.status(400).send('Chatwoot integration not configured');
     }
 
-    // 4. Check session details in Firestore
+    // 4. Load Active Flow with 'chatwoot' integration
+    const flowsColl = db.collection(`projects/${projectId}/flows`);
+    const flowsQuery = await flowsColl
+      .where('integrationKey', '==', 'chatwoot')
+      .where('isActive', '==', true)
+      .limit(1)
+      .get();
+
+    if (flowsQuery.empty) {
+      console.log(`[Webhook] Nenhum fluxo ativo com integração Chatwoot encontrado para o projeto ${projectId}.`);
+      return res.status(200).send('No active flow for Chatwoot');
+    }
+
+    const activeFlow = flowsQuery.docs[0].data();
+
+    // 4.5. Check session details in Firestore
     const sessionRef = db.doc(`projects/${projectId}/sessions/${conversationId}`);
     const sessionSnap = await sessionRef.get();
+    
+    // Handle conversation_updated
+    if (event === 'conversation_updated') {
+      if (sessionSnap.exists) {
+        const currentStatus = sessionSnap.data().status;
+        if (currentStatus === 'active' && activeFlow.useBotLabel) {
+          const currentLabels = conversation.labels || [];
+          if (!currentLabels.includes('bot')) {
+            await sessionRef.update({
+              status: 'disabled',
+              disabledReason: 'label_removed_manually',
+              updatedAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+            console.log(`[Webhook] Etiqueta 'bot' removida manualmente na conversa ${conversationId}. Bot desativado.`);
+          }
+        }
+      }
+      return res.status(200).send('Conversation updated processed');
+    }
+
     const messageType = req.body.message_type || '';
     const incomingMessage = req.body.content || '';
 
@@ -457,6 +492,14 @@ app.post('/chatwootWebhook', async (req, res) => {
         });
         console.log(`[Webhook] Conversa ${conversationId} iniciada pelo cliente. Bot ativo.`);
         sessionStatus = 'active';
+
+        if (activeFlow.useBotLabel) {
+          try {
+            await addChatwootLabel(chatwootConfig, conversationId, 'bot');
+          } catch (err) {
+            console.error(`[Webhook] Erro ao adicionar etiqueta bot inicial: ${err.message}`);
+          }
+        }
       }
     } else {
       // Session already exists: verify current status
@@ -485,25 +528,19 @@ app.post('/chatwootWebhook', async (req, res) => {
             updatedAt: admin.firestore.FieldValue.serverTimestamp()
           });
           console.log(`[Webhook] Agente interveio na conversa ${conversationId}. Bot desativado.`);
+
+          if (activeFlow.useBotLabel) {
+            try {
+              await removeChatwootLabel(chatwootConfig, conversationId, 'bot');
+            } catch (err) {
+              console.error(`[Webhook] Erro ao remover etiqueta bot na intervenção: ${err.message}`);
+            }
+          }
           return res.status(200).send('Agent intervened. Bot disabled.');
         }
       }
     }
 
-    // 5. Load Active Flow with 'chatwoot' integration
-    const flowsColl = db.collection(`projects/${projectId}/flows`);
-    const flowsQuery = await flowsColl
-      .where('integrationKey', '==', 'chatwoot')
-      .where('isActive', '==', true)
-      .limit(1)
-      .get();
-
-    if (flowsQuery.empty) {
-      console.log(`[Webhook] Nenhum fluxo ativo com integração Chatwoot encontrado para o projeto ${projectId}.`);
-      return res.status(200).send('No active flow for Chatwoot');
-    }
-
-    const activeFlow = flowsQuery.docs[0].data();
     const nodes = activeFlow.nodes || [];
 
     // 6. Find start node

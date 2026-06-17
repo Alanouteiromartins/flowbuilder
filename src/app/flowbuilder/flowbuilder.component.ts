@@ -53,6 +53,7 @@ export class FlowbuilderComponent implements OnInit, OnDestroy {
   flowName = signal('');
   flowIntegrationKey = signal('');
   flowIsActive = signal(false);
+  flowUseBotLabel = signal(false);
 
   // States for testing HTTP Request
   isTestingHttp = signal(false);
@@ -534,6 +535,7 @@ export class FlowbuilderComponent implements OnInit, OnDestroy {
         this.flowName.set(flowData.name);
         this.flowIntegrationKey.set(flowData.integrationKey || '');
         this.flowIsActive.set(flowData.isActive || false);
+        this.flowUseBotLabel.set(flowData.useBotLabel || false);
         
         const loadedNodes = flowData.nodes || [];
         
@@ -1267,8 +1269,36 @@ export class FlowbuilderComponent implements OnInit, OnDestroy {
       this.botActiveModalText.set('Erro ao atualizar o bot. Tente novamente.');
       await new Promise(resolve => setTimeout(resolve, 1500));
     } finally {
-      // 5. Dismiss modal
+      this.botActiveModalState.set('idle');
       this.showBotActiveModal.set(false);
+    }
+  }
+
+  async toggleFlowUseBotLabel() {
+    const nextState = !this.flowUseBotLabel();
+    
+    if (nextState) {
+      await Swal.fire({
+        title: 'Atenção',
+        text: 'Para que isso funcione, crie manualmente uma etiqueta com o nome "bot" nas configurações da sua caixa de entrada no Chatwoot.',
+        icon: 'info',
+        confirmButtonColor: '#0ea5e9'
+      });
+    }
+
+    try {
+      await this.flowService.updateFlow(this.projectId(), this.flowId(), {
+        useBotLabel: nextState
+      });
+      this.flowUseBotLabel.set(nextState);
+    } catch (err) {
+      console.error('Erro ao atualizar uso da etiqueta do bot:', err);
+      Swal.fire({
+        title: 'Erro',
+        text: 'Não foi possível atualizar a configuração.',
+        icon: 'error',
+        confirmButtonColor: '#0ea5e9'
+      });
     }
   }
 

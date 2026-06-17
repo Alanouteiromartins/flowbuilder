@@ -108,6 +108,7 @@ export interface Flow {
   name: string;
   description: string;
   isActive: boolean;
+  useBotLabel?: boolean; // Controls whether the bot label is synced with Chatwoot
   updatedAt: number;
   nodes?: FlowNode[]; // Storing all canvas nodes directly inside the flow document!
   integrationKey?: string; // Optional bound integration key (e.g., 'chatwoot', 'whatsapp', 'none')
