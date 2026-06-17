@@ -1269,7 +1269,7 @@ export class FlowbuilderComponent implements OnInit, OnDestroy {
       this.botActiveModalText.set('Erro ao atualizar o bot. Tente novamente.');
       await new Promise(resolve => setTimeout(resolve, 1500));
     } finally {
-      this.botActiveModalState.set('idle');
+      // 5. Dismiss modal
       this.showBotActiveModal.set(false);
     }
   }
