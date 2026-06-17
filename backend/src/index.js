@@ -904,6 +904,13 @@ app.post('/chatwootWebhook', async (req, res) => {
           updatedAt: admin.firestore.FieldValue.serverTimestamp()
         });
         console.log(`[Webhook] Conversa ${conversationId} finalizada pelo bloco.`);
+        if (activeFlow.useBotLabel) {
+          try {
+            await removeChatwootLabel(chatwootConfig, conversationId, 'bot');
+          } catch (err) {
+            console.error(`[Webhook] Erro ao remover etiqueta no fim do fluxo: ${err.message}`);
+          }
+        }
         break;
       } else if (node.type === 'uazapi_send_text') {
         const uazapiConfig = projectData?.uazapiConfig;
@@ -1060,6 +1067,13 @@ app.post('/chatwootWebhook', async (req, res) => {
         updatedAt: admin.firestore.FieldValue.serverTimestamp()
       });
       console.log(`[Webhook] Conversa ${conversationId} chegou ao fim do fluxo.`);
+      if (activeFlow.useBotLabel) {
+        try {
+          await removeChatwootLabel(chatwootConfig, conversationId, 'bot');
+        } catch (err) {
+          console.error(`[Webhook] Erro ao remover etiqueta no fim do fluxo: ${err.message}`);
+        }
+      }
     }
 
     res.status(200).send('Flow executed successfully');
