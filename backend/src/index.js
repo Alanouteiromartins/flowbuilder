@@ -844,6 +844,20 @@ app.post('/chatwootWebhook', async (req, res) => {
         const isTrue = isCorrectDay && isWithinTime;
         currentNodeId = isTrue ? node.trueNodeId : node.falseNodeId;
         continue;
+      } else if (node.type === 'delay') {
+        const time = Number(node.delayTime) || 0;
+        const unit = node.delayUnit || 'seconds';
+        let ms = time;
+        if (unit === 'minutes') ms *= 60;
+        ms *= 1000;
+        
+        if (ms > 0) {
+          console.log(`[Webhook] Aguardando ${time} ${unit} (${ms}ms) antes do próximo nó.`);
+          await new Promise(resolve => setTimeout(resolve, ms));
+        }
+        
+        currentNodeId = node.nextNodeId;
+        continue;
       } else if (node.type === 'finish') {
         await sessionRef.update({
           status: 'finished',
