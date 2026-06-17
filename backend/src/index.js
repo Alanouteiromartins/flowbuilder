@@ -381,7 +381,7 @@ app.get('/', (req, res) => {
 
 // 1. Webhook Chatwoot
 app.post('/chatwootWebhook', async (req, res) => {
-  const { event, message_type, conversation } = req.body;
+  const { event, message_type } = req.body;
   const projectId = req.query.projectId;
 
   console.log(`[Webhook] Evento: ${event}, Tipo: ${message_type}, Projeto: ${projectId}`);
@@ -393,6 +393,9 @@ app.post('/chatwootWebhook', async (req, res) => {
   if (event !== 'message_created' && event !== 'conversation_updated') {
     return res.status(200).send('Event ignored');
   }
+
+  // No evento conversation_updated, o corpo do webhook é o próprio objeto da conversa
+  const conversation = event === 'conversation_updated' ? req.body : req.body.conversation;
 
   if (!conversation || !conversation.id) {
     return res.status(400).send('Missing conversation information');
