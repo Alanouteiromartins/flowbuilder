@@ -17,7 +17,7 @@ import { ProjectService } from './project.service';
 
 export interface FlowNode {
   id: string;
-  type: 'start' | 'message' | 'http_request' | 'conditional' | 'uazapi_buttons' | 'uazapi_list' | 'uazapi_send_text' | 'question' | 'chatwoot_label' | 'chatwoot_agent' | 'chatwoot_team' | 'chatwoot_status' | 'time_check' | 'finish';
+  type: 'start' | 'message' | 'http_request' | 'conditional' | 'uazapi_buttons' | 'uazapi_list' | 'uazapi_send_text' | 'question' | 'chatwoot_label' | 'chatwoot_agent' | 'chatwoot_team' | 'chatwoot_status' | 'time_check' | 'delay' | 'finish';
   name: string;
   x: number;
   y: number;
@@ -97,6 +97,10 @@ export interface FlowNode {
   timeEndMinute?: number;
   timeWeekdays?: string[];
   timeTimezone?: string;
+
+  // Delay Node properties
+  delayTime?: number;
+  delayUnit?: 'seconds' | 'minutes';
 }
 
 export interface Flow {

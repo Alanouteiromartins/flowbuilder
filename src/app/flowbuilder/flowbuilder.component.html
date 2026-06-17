@@ -199,6 +199,17 @@
             </div>
           </button>
 
+          <button (click)="addDelayComponent()" class="component-drag-btn component-delay-btn">
+            <span class="component-icon">
+              <svg class="component-icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </span>
+            <div class="component-info">
+              <span class="component-label">Aguardar (Tempo)</span>
+            </div>
+          </button>
+
           <button (click)="addFinishComponent()" class="component-drag-btn component-finish-btn">
             <span class="component-icon">
               <svg class="component-icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -395,6 +406,7 @@
         [class.node-question]="node.type === 'question'"
         [class.node-chatwoot-label]="node.type === 'chatwoot_label' || node.type === 'chatwoot_agent' || node.type === 'chatwoot_team'"
         [class.node-time-check]="node.type === 'time_check'"
+        [class.node-delay]="node.type === 'delay'"
         [class.node-finish]="node.type === 'finish'"
         [class.node-start]="node.type === 'start'"
         [style.left.px]="node.x"
@@ -447,6 +459,7 @@
               <svg *ngSwitchCase="'chatwoot_team'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
               <svg *ngSwitchCase="'time_check'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
               <svg *ngSwitchCase="'finish'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+              <svg *ngSwitchCase="'delay'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             </ng-container>
           </span>
           <span class="node-name-text">{{ node.type === 'finish' ? 'Fim' : node.name }}</span>
@@ -572,6 +585,13 @@
             </span>
             <span class="time-days-preview" *ngIf="node.timeWeekdays">
               📅 {{ node.timeWeekdays.length === 7 ? 'Todos os dias' : node.timeWeekdays.length === 5 && !node.timeWeekdays.includes('6') && !node.timeWeekdays.includes('7') ? 'Segunda a Sexta' : node.timeWeekdays.length === 0 ? 'Nenhum dia' : 'Dias personalizados (' + node.timeWeekdays.length + ')' }}
+            </span>
+          </div>
+
+          <!-- Delay preview -->
+          <div class="node-preview-delay" *ngIf="node.type === 'delay'">
+            <span class="uazapi-choice-badge" style="background: rgba(234, 179, 8, 0.15); color: #eab308; border-color: rgba(234, 179, 8, 0.3); font-size: 0.75rem; padding: 0.15rem 0.4rem; border-radius: 4px; display: inline-block;">
+              ⏳ {{ node.delayTime }} {{ node.delayUnit === 'minutes' ? 'minutos' : 'segundos' }}
             </span>
           </div>
 
@@ -1222,6 +1242,56 @@
               <option *ngFor="let potential of getPotentialNextNodes(selectedNode()!)" [value]="potential.id">
                 {{ potential.name }} ({{ potential.type }})
               </option>
+            </select>
+          </div>
+        </ng-container>
+
+        <!-- ==================== PROPERTIES: DELAY NODE ==================== -->
+        <ng-container *ngIf="selectedNode()?.type === 'delay'">
+          <!-- Name -->
+          <div class="prop-group">
+            <label for="prop-delay-name">Identificação do Bloco</label>
+            <input
+              type="text"
+              id="prop-delay-name"
+              class="prop-control"
+              [ngModel]="selectedNode()?.name"
+              (ngModelChange)="updateSelectedNodeProperties({name: $event})"
+            />
+          </div>
+
+          <div class="prop-group">
+            <label class="prop-label">Tempo a Aguardar</label>
+            <div style="display: flex; gap: 0.5rem;">
+              <input
+                type="number"
+                class="prop-control"
+                style="flex: 1;"
+                [ngModel]="selectedNode()?.delayTime"
+                (ngModelChange)="updateSelectedNodeProperties({delayTime: $event})"
+                min="1"
+              />
+              <select
+                class="prop-control select-control"
+                style="flex: 1;"
+                [ngModel]="selectedNode()?.delayUnit"
+                (ngModelChange)="updateSelectedNodeProperties({delayUnit: $event})"
+              >
+                <option value="seconds">Segundos</option>
+                <option value="minutes">Minutos</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="prop-group">
+            <label class="prop-label">Próximo Passo (Sequência)</label>
+            <select
+              class="prop-control select-control"
+              [ngModel]="selectedNode()?.nextNodeId"
+              (ngModelChange)="updateSelectedNodeProperties({nextNodeId: $event || undefined})"
+            >
+              <option [value]="undefined">-- Nenhum (Fim do fluxo) --</option>
+              <option *ngFor="let option of getPotentialNextNodes(selectedNode()!)" [value]="option.id">➔ {{ option.name }}</option>
             </select>
           </div>
         </ng-container>

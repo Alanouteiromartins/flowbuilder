@@ -400,6 +400,13 @@ app.post('/chatwootWebhook', async (req, res) => {
 
   const conversationId = conversation.id;
 
+  // Limite configurável (via variável de ambiente ou fixo) para ignorar conversas antigas
+  const minConversationId = process.env.CHATWOOT_MIN_CONVERSATION_ID ? parseInt(process.env.CHATWOOT_MIN_CONVERSATION_ID, 10) : 952;
+  if (conversationId <= minConversationId) {
+    console.log(`[Webhook] Conversa ${conversationId} ignorada por ser menor ou igual ao ID limite (${minConversationId}).`);
+    return res.status(200).send('Ignored old conversation based on ID limit.');
+  }
+
   try {
     if (!db) {
       throw new Error('Database (Firestore) not initialized. Check server credentials.');
@@ -432,7 +439,9 @@ app.post('/chatwootWebhook', async (req, res) => {
     let sessionStatus = sessionData?.status || 'active';
 
     if (!sessionSnap.exists) {
-      // Very first message of this conversation!
+      // Very first message of this conversation (from the perspective of the bot)!
+      const isAlreadyHandled = conversation.status === 'open' || conversation.status === 'snoozed' || conversation.assignee_id != null;
+
       if (messageType === 'outgoing') {
         // Agent initiated conversation: disable bot forever for this conversation
         await sessionRef.set({
@@ -442,6 +451,15 @@ app.post('/chatwootWebhook', async (req, res) => {
         });
         console.log(`[Webhook] Conversa ${conversationId} iniciada por um agente. Bot desativado.`);
         return res.status(200).send('Conversation initiated by agent. Bot disabled.');
+      } else if (isAlreadyHandled) {
+        // Customer replied to an old conversation that is already being handled.
+        await sessionRef.set({
+          status: 'disabled',
+          disabledReason: 'already_handled_old_conversation',
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+        console.log(`[Webhook] Conversa ${conversationId} antiga/já em andamento (status: ${conversation.status}, assignee: ${conversation.assignee_id}). Bot desativado.`);
+        return res.status(200).send('Old conversation already handled by agent. Bot disabled.');
       } else {
         // Customer initiated conversation: activate session
         await sessionRef.set({

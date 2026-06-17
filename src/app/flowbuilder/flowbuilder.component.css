@@ -2191,6 +2191,51 @@ textarea.prop-control {
   color: #ef4444;
 }
 
+/* Delay Button styles */
+.component-delay-btn {
+  border-left-color: #eab308 !important;
+}
+.component-delay-btn:hover {
+  border-color: #eab308 !important;
+  background-color: #fefce8 !important;
+}
+.component-delay-btn:hover .component-label {
+  color: #ca8a04;
+}
+.component-delay-btn:hover .component-icon {
+  border-color: #fef08a;
+  color: #eab308;
+}
+
+/* Delay Node Card style on canvas */
+.node-card.node-delay {
+  border-top-color: #eab308;
+}
+.node-card.node-delay.selected {
+  box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.25);
+  border-color: #eab308;
+}
+.node-card.node-delay.selected .connector-anchor {
+  border-color: #eab308;
+}
+
+/* Delay Node Preview */
+.node-preview-delay {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background-color: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid #f1f5f9;
+}
+.delay-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #475569;
+}
+
 /* Finish Node Card style on canvas */
 .node-card.node-finish {
   width: 140px;

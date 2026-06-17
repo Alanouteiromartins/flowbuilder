@@ -714,6 +714,27 @@ export class FlowbuilderComponent implements OnInit, OnDestroy {
     this.selectNode(newNode);
   }
 
+  // Add a new "Aguardar (Delay)" component to Firestore
+  addDelayComponent() {
+    const currentNodes = this.nodes();
+    const count = currentNodes.length + 1;
+
+    const newNode: FlowNode = {
+      id: 'node-' + Date.now(),
+      type: 'delay',
+      name: `Aguardar ${count}`,
+      x: 100 + (Math.random() * 50),
+      y: 100 + (Math.random() * 50),
+      delayTime: 5,
+      delayUnit: 'seconds'
+    };
+
+    const updated = [...currentNodes, newNode];
+    this.nodes.set(updated);
+    this.saveNodes(updated);
+    this.selectNode(newNode);
+  }
+
   // Add a new "Menu de Botões Uazapi" component to Firestore
   addUazapiButtonsComponent() {
     const currentNodes = this.nodes();
